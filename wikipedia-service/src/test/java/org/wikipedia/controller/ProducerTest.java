@@ -10,7 +10,10 @@ public class ProducerTest {
 
     @Test
     public void producerCallBackTest() {
-        Properties properties = PropertiesConfiguration.simpleProducerProperty("localhost:9092", StringSerializer.class.getName(), StringSerializer.class.getName());
+        String bootStrapServer = "localhost:9092";
+        String keyDeserializerClassName = StringSerializer.class.getName();
+        String valueDeserializerClassName = StringSerializer.class.getName();
+        Properties properties = PropertiesConfiguration.simpleProducerProperty(bootStrapServer, keyDeserializerClassName, valueDeserializerClassName);
         String topicName = "topicTest";
         String key = "keyTest";
         String value = "valueTest";
