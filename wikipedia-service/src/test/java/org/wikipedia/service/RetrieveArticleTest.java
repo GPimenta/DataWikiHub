@@ -21,7 +21,7 @@ public class RetrieveArticleTest {
     private String path = "/banana";
     private String pathWithHTML = "/with_html";
     private String bootstrap = "localhost:9092";
-    private String topic = "topicTest2";
+    private String topic = "topicTest3";
     List<String> articleList = ReadFile.getList("src/main/java/org/wikipedia/articles/ArticlesList.txt");
     final private Gson gson = new Gson();
 
@@ -32,7 +32,6 @@ public class RetrieveArticleTest {
 
     public RetrieveArticleTest() throws IOException {
     }
-
 
     @Test
     public void getPageSourceTest() throws IOException {

@@ -25,19 +25,40 @@ public class Consumer {
         this.topics = topics;
     }
 
-    public <T> Map<String, T> consumerSimpleTopic(Class<T> clazz) {
-         Map<String, T> map = new HashMap<>();
+    public <T> void consumerSimpleTopic(Class<T> clazz) {
+        Map<String, T> map = new HashMap<>();
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
         consumer.subscribe(topics);
 
-        while (true) {
-            logger.info("Polling messages");
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+        try {
+            while (true) {
+                logger.info("Polling messages");
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
 
-            for (ConsumerRecord<String, String> record : records) {
-                map.put(record.key(), gson.fromJson(record.value(), clazz));
+                for (ConsumerRecord<String, String> record : records) {
+                    System.out.println(record.key() + " " + record.value());
+                    map.put(record.key(), gson.fromJson(record.value(), clazz));
+                }
             }
+        } catch (Exception e) {
+            logger.error("Unexpected error {0}", e);
         }
     }
+
+//    public void consumerSimpleTesting(){
+//        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+//
+//        consumer.subscribe(topics);
+//
+//        while (true) {
+//            logger.info("polling");
+//            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+//
+//            for (ConsumerRecord <String, String> record : records) {
+//                System.out.println(record.key() + " " + record.value());
+//
+//            }
+//        }
+//    }
 }

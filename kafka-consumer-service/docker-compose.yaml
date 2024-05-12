@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15.3-alpine3.18
+    hostname: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=WIKI_ARTICLES
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/articles.sql:/docker-entrypoint-initdb.d/articles.sql
+
+volumes:
+  db:
+    driver: local
+
+
+#version: '3.8'
+#
+#services:
+#  postgres:
+#    image: postgres:15.3-alpine3.18
+#    hostname: postgres
+#    container_name: postgres
+#    restart: always
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: WIKI_ARTICLES
+#    volumes:
+#      - ./kafka-consumer-service/db:/docker-entrypoint-initdb.d  # Mount the directory containing the SQL scripts
+#      - postgres_data:/var/lib/postgresql/data  # Persist PostgreSQL data
+#
+#volumes:
+#  postgres_data:

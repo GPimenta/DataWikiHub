@@ -1,5 +1,6 @@
 package org.stream_message.controller;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
@@ -13,22 +14,48 @@ import java.util.Properties;
 
 public class ConsumerTest {
 
+    private static String bootStrapServer = "localhost:9092";
+    private static String keyDeserializerClassName = StringDeserializer.class.getName();
+    private static String valueDeserializerClassName = StringDeserializer.class.getName();
+    private static String groupId = "Banana7";
+    private static String offSetReset = "earliest";
+
     @Test
     public void consumerSimpleTopicTest() {
 
-        String bootStrapServer = "localhost:9092";
-        String keyDeserializerClassName = StringDeserializer.class.getName();
-        String valueDeserializerClassName = StringDeserializer.class.getName();
-        String groupId = "SecondTest";
-        String offSetReset = "earliest";
         String topic = "topicTest";
         Properties properties = PropertiesConfiguration.simpleConsumerProperty(bootStrapServer, keyDeserializerClassName, valueDeserializerClassName, groupId, offSetReset);
         List<String> topicsList = List.of(topic);
+
         Consumer consumer = new Consumer(properties, topicsList);
+        consumer.consumerSimpleTopic(String.class);
+    }
 
-        Map<String, String> stringPageSourceMap = consumer.consumerSimpleTopic(String.class);
+    @Test
+    public void consumerSimpleTopicWithArticleTest() {
+        String topic = "topicTest3";
+        Properties properties = PropertiesConfiguration.simpleConsumerProperty(bootStrapServer, keyDeserializerClassName, valueDeserializerClassName, groupId, offSetReset);
+        List<String> topicList = List.of(topic);
 
-        stringPageSourceMap.forEach((key, value) -> System.out.println("key -> " + key + " value -> " + value));
+        Consumer consumer = new Consumer(properties, topicList);
+        consumer.consumerSimpleTopic(PageSource.class);
 
     }
+
+
+//    @Test
+//    public void consumerSimpleTest() {
+//        Properties properties = new Properties();
+//        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+//        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+//        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+//        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "Banana4");
+//        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+//
+//        String topic = "topicTest";
+//        List<String> topicsList = List.of(topic);
+//
+//        Consumer consumer = new Consumer(properties, topicsList);
+//        consumer.consumerSimpleTesting();
+//    }
 }
