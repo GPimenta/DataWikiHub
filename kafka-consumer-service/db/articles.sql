@@ -5,6 +5,7 @@ CREATE TABLE ARTICLES (
     content TEXT NOT NULL,
     source TEXT,
     latest_version_timestamp TIMESTAMP,
+    redirect_target TEXT,
     PRIMARY KEY(id)
 );
 

@@ -36,7 +36,7 @@ public class PostgresSQLJDBC {
                 logger.error("Not successfully in making the connection to postgres");
                 return null;
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             logger.error("Error in making connection to postgres");
             return null;
         }
