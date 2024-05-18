@@ -23,6 +23,7 @@ public class ArticlesDAO {
     private final String QUERY_key = "SELECT id, key, title, content, source, latest_version_timestamp FROM ARTICLES WHERE key = ?;";
     private final String INSERT_ARTICLE = "INSERT INTO ARTICLES (key, title, content, source, latest_version_timestamp) WHERE VALUES (?, ?, ?, ?, ?);";
     private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET (key, title, content, source, latest_version_timestamp) WHERE VALUES (?, ?, ?, ?, ?);";
+    private final String DELETE_ARTICLE = "DELETE FROM ARTICLES WHERE key = ?;";
 
     public ArticlesDAO(PostgresSQLJDBC postgresSQLJDBC) {
         this.postgresSQLJDBC = postgresSQLJDBC;
@@ -143,6 +144,24 @@ public class ArticlesDAO {
             }
         } catch (SQLException e) {
             logger.error("Error updating article");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean deleteArticle(String key) {
+        try {
+            if (getByKey(key).isEmpty()) {
+                logger.info("Article does not exist, as such no delete was made");
+                return false;
+            }
+            logger.info("Article found");
+            try (PreparedStatement preparedStatement = postgresSQLJDBC.getConnection().prepareStatement(DELETE_ARTICLE)) {
+                preparedStatement.setString(1, key);
+
+                return preparedStatement.execute();
+            }
+        } catch (SQLException e) {
+            logger.error("Error deleting article");
             throw new RuntimeException(e);
         }
     }
