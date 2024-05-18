@@ -1,6 +1,5 @@
 package org.stream_message.repository;
 
-import org.apache.zookeeper.Op;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.stream_message.connector.PostgresSQLJDBC;
