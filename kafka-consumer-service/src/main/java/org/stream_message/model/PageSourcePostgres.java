@@ -3,13 +3,15 @@ package org.stream_message.model;
 import com.google.gson.annotations.SerializedName;
 
 import javax.annotation.Nullable;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class PageSource {
+public class PageSourcePostgres {
     private final int id;
     private final String key;
     private final String title;
-    private final Latest latest;
+    private final LocalDateTime latest;
     private final String contentModel;
     private final License license;
     private final String source;
@@ -21,7 +23,7 @@ public class PageSource {
         private int id;
         private String key;
         private String title;
-        private Latest latest;
+        private LocalDateTime latest;
         private String contentModel;
         private License license;
         private String source;
@@ -39,7 +41,7 @@ public class PageSource {
             title = val; return this;
         }
 
-        public Builder latest(Latest val) {
+        public Builder latest(LocalDateTime val) {
             latest = val; return this;
         }
 
@@ -58,10 +60,14 @@ public class PageSource {
             redirectTarget = val; return this;
         }
 
+        public PageSourcePostgres build(){
+            return new PageSourcePostgres(this);
+        }
+
 
     }
 
-    private PageSource(Builder builder) {
+    private PageSourcePostgres(Builder builder) {
         id = builder.id;
         key = builder.key;
         title = builder.title;
@@ -84,7 +90,7 @@ public class PageSource {
         return title;
     }
 
-    public Latest getLatest() {
+    public LocalDateTime getLatest() {
         return latest;
     }
 
@@ -109,7 +115,7 @@ public class PageSource {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PageSource that = (PageSource) o;
+        PageSourcePostgres that = (PageSourcePostgres) o;
         return id == that.id && Objects.equals(key, that.key) && Objects.equals(title, that.title) && Objects.equals(latest, that.latest) && Objects.equals(contentModel, that.contentModel) && Objects.equals(license, that.license) && Objects.equals(source, that.source) && Objects.equals(redirectTarget, that.redirectTarget);
     }
 
