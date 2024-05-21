@@ -18,10 +18,10 @@ public class ArticlesDAO {
     private static final Logger logger = LoggerFactory.getLogger(ArticlesDAO.class.getName());
     private final PostgresSQLJDBC postgresSQLJDBC;
     private final String SELECT_ALL_ARTICLES = "SELECT * FROM ARTICLES;";
-    private final String QUERY_id = "SELECT id, key, title, content, source, latest_version_timestamp FROM ARTICLES WHERE id = ?;";
-    private final String QUERY_key = "SELECT id, key, title, content, source, latest_version_timestamp FROM ARTICLES WHERE key = ?;";
-    private final String INSERT_ARTICLE = "INSERT INTO ARTICLES (key, title, content, source, latest_version_timestamp) WHERE VALUES (?, ?, ?, ?, ?);";
-    private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET (key, title, content, source, latest_version_timestamp) WHERE VALUES (?, ?, ?, ?, ?);";
+    private final String QUERY_id = "SELECT id, key, title, content_model, source, latest_version_timestamp, redirect_target FROM ARTICLES WHERE id = ?;";
+    private final String QUERY_key = "SELECT id, key, title, content_model, source, latest_version_timestamp, redirect_target FROM ARTICLES WHERE key = ?;";
+    private final String INSERT_ARTICLE = "INSERT INTO ARTICLES (key, title, content_model, source, latest_version_timestamp, redirect_target) VALUES (?, ?, ?, ?, ?, ?);";
+    private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET (key, title, content_model, source, latest_version_timestamp, redirect_target) WHERE VALUES (?, ?, ?, ?, ?, ?);";
     private final String DELETE_ARTICLE = "DELETE FROM ARTICLES WHERE key = ?;";
 
     public ArticlesDAO(PostgresSQLJDBC postgresSQLJDBC) {
@@ -97,7 +97,7 @@ public class ArticlesDAO {
                 return Optional.empty();
             }
         } catch (SQLException e) {
-            logger.error("Error using QUERY_key");
+            logger.error("Error using QUERY_key = {0}", e);
             throw new RuntimeException();
         }
     }
@@ -115,8 +115,9 @@ public class ArticlesDAO {
                 preparedStatement.setString(3, pageSourcePostgres.getContentModel());
                 preparedStatement.setString(4, pageSourcePostgres.getSource());
                 preparedStatement.setTimestamp(5, Timestamp.valueOf(pageSourcePostgres.getLatest()));
+                preparedStatement.setString(6, pageSourcePostgres.getRedirectTarget());
 
-                return preparedStatement.execute();
+                return preparedStatement.executeUpdate() == 1;
             }
         } catch (SQLException e) {
             logger.error("Error inserting the article in setArticle");
@@ -138,11 +139,12 @@ public class ArticlesDAO {
                 preparedStatement.setString(3, pageSourcePostgres.getContentModel());
                 preparedStatement.setString(4, pageSourcePostgres.getSource());
                 preparedStatement.setTimestamp(5, Timestamp.valueOf(pageSourcePostgres.getLatest()));
+                preparedStatement.setString(6, pageSourcePostgres.getRedirectTarget());
 
                 return preparedStatement.execute();
             }
         } catch (SQLException e) {
-            logger.error("Error updating article");
+            logger.error("Error updating article = {0}", e);
             throw new RuntimeException(e);
         }
     }

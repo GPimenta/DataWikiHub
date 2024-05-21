@@ -13,7 +13,6 @@ public class PageSourcePostgres {
     private final String title;
     private final LocalDateTime latest;
     private final String contentModel;
-    private final License license;
     private final String source;
     @SerializedName("optionalField")
     @Nullable
@@ -25,7 +24,6 @@ public class PageSourcePostgres {
         private String title;
         private LocalDateTime latest;
         private String contentModel;
-        private License license;
         private String source;
         private String redirectTarget;
 
@@ -49,9 +47,6 @@ public class PageSourcePostgres {
             contentModel = val; return this;
         }
 
-        public Builder licence(License val) {
-            license = val; return this;
-        }
         public Builder source(String val) {
             source = val; return this;
         }
@@ -73,7 +68,6 @@ public class PageSourcePostgres {
         title = builder.title;
         latest = builder.latest;
         contentModel = builder.contentModel;
-        license = builder.license;
         source = builder.source;
         redirectTarget = builder.redirectTarget;
     }
@@ -98,10 +92,6 @@ public class PageSourcePostgres {
         return contentModel;
     }
 
-    public License getLicense() {
-        return license;
-    }
-
     public String getSource() {
         return source;
     }
@@ -116,12 +106,12 @@ public class PageSourcePostgres {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PageSourcePostgres that = (PageSourcePostgres) o;
-        return id == that.id && Objects.equals(key, that.key) && Objects.equals(title, that.title) && Objects.equals(latest, that.latest) && Objects.equals(contentModel, that.contentModel) && Objects.equals(license, that.license) && Objects.equals(source, that.source) && Objects.equals(redirectTarget, that.redirectTarget);
+        return id == that.id && Objects.equals(key, that.key) && Objects.equals(title, that.title) && Objects.equals(latest, that.latest) && Objects.equals(contentModel, that.contentModel) && Objects.equals(source, that.source) && Objects.equals(redirectTarget, that.redirectTarget);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, title, latest, contentModel, license, source, redirectTarget);
+        return Objects.hash(id, key, title, latest, contentModel, source, redirectTarget);
     }
 
     @Override
@@ -132,7 +122,6 @@ public class PageSourcePostgres {
                 ", title='" + title + '\'' +
                 ", latest=" + latest +
                 ", contentModel='" + contentModel + '\'' +
-                ", license=" + license +
                 ", source='" + source + '\'' +
                 ", redirectTarget='" + redirectTarget + '\'' +
                 '}';
