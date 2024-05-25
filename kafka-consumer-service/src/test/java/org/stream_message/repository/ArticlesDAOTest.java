@@ -70,9 +70,9 @@ public class ArticlesDAOTest {
             fail("Setup failed: Unable to clear ARTICLES table");
         }
         assertTrue(
-                articlesDAO.setArticle(testArticle1)
-                == articlesDAO.setArticle(testArticle2)
-                == articlesDAO.setArticle(testArticle3),
+                articlesDAO.setArticle(testArticle1).isPresent()
+                == articlesDAO.setArticle(testArticle2).isPresent()
+                == articlesDAO.setArticle(testArticle3).isPresent(),
                 "The article should be inserted successfully");
 
     }
@@ -156,9 +156,6 @@ public class ArticlesDAOTest {
         assertEquals(testArticle1.getRedirectTarget(), retrievedArticle.get().getRedirectTarget(), "The redirect targets should match");
     }
 
-
-
-
     @Test
     public void setArticleTest() {
         PageSourcePostgres pageSourcePostgres = new PageSourcePostgres.Builder()
@@ -167,11 +164,10 @@ public class ArticlesDAOTest {
                 .latest(LocalDateTime.now())
                 .contentModel("testingContentSetArticle")
                 .source("testingSourceSetArticle")
-                .redirectTarget("redirec" +
-                        "+tTargetTestSetArticle")
+                .redirectTarget("redirectTargetTestSetArticle")
                 .build();
 
-        assert(articlesDAO.setArticle(pageSourcePostgres));
+        assert(articlesDAO.setArticle(pageSourcePostgres).isPresent());
 
         Optional<PageSourcePostgres> retrievedArticle = articlesDAO.getByKey(pageSourcePostgres.getKey());
         assertTrue(retrievedArticle.isPresent(), "The article should be present in the database");
@@ -183,6 +179,31 @@ public class ArticlesDAOTest {
         assertEquals(pageSourcePostgres.getSource(), retrievedArticle.get().getSource(), "The sources should match");
         assertEquals(pageSourcePostgres.getRedirectTarget(), retrievedArticle.get().getRedirectTarget(), "The redirect targets should match");
     }
+
+    @Test
+    public void updateArticleTest() {
+        PageSourcePostgres pageSourcePostgres = new PageSourcePostgres.Builder()
+                .key("testingKey2")
+                .title("testingTitleSetArticle")
+                .latest(LocalDateTime.now())
+                .contentModel("testingContentSetArticle")
+                .source("testingSourceSetArticle")
+                .redirectTarget("redirectTargetTestSetArticle")
+                .build();
+
+        assert(articlesDAO.updateArticle(pageSourcePostgres).isPresent());
+
+        Optional<PageSourcePostgres> retrievedArticle = articlesDAO.getByKey(pageSourcePostgres.getKey());
+        assertTrue(retrievedArticle.isPresent(), "The article should be present in the database");
+
+        assertEquals(pageSourcePostgres.getKey(), retrievedArticle.get().getKey(), "The keys should match");
+        assertEquals(pageSourcePostgres.getTitle(), retrievedArticle.get().getTitle(), "The titles should match");
+        assertEquals(pageSourcePostgres.getLatest(), retrievedArticle.get().getLatest(), "The latest timestamps should match");
+        assertEquals(pageSourcePostgres.getContentModel(), retrievedArticle.get().getContentModel(), "The content models should match");
+        assertEquals(pageSourcePostgres.getSource(), retrievedArticle.get().getSource(), "The sources should match");
+        assertEquals(pageSourcePostgres.getRedirectTarget(), retrievedArticle.get().getRedirectTarget(), "The redirect targets should match");
+    }
+
     @Test
     public void deleteArticle() {
         PageSourcePostgres pageSourcePostgres = new PageSourcePostgres.Builder()
@@ -194,7 +215,7 @@ public class ArticlesDAOTest {
                 .redirectTarget("redirectTargetTestSetArticle")
                 .build();
 
-        assertTrue(articlesDAO.setArticle(pageSourcePostgres), "The article should be on DB");
+        assertTrue(articlesDAO.setArticle(pageSourcePostgres).isPresent(), "The article should be on DB");
         assertTrue(articlesDAO.deleteArticle(pageSourcePostgres.getKey()), "The article should be deleted on DB");
         assertTrue(articlesDAO.getByKey(pageSourcePostgres.getKey()).isEmpty(), "The article should not be in DB");
     }

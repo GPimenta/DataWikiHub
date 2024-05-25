@@ -1,5 +1,6 @@
 package org.stream_message.repository;
 
+import org.checkerframework.checker.nullness.Opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.stream_message.connector.PostgresSQLJDBC;
@@ -21,7 +22,7 @@ public class ArticlesDAO {
     private final String QUERY_id = "SELECT id, key, title, content_model, source, latest_version_timestamp, redirect_target FROM ARTICLES WHERE id = ?;";
     private final String QUERY_key = "SELECT id, key, title, content_model, source, latest_version_timestamp, redirect_target FROM ARTICLES WHERE key = ?;";
     private final String INSERT_ARTICLE = "INSERT INTO ARTICLES (key, title, content_model, source, latest_version_timestamp, redirect_target) VALUES (?, ?, ?, ?, ?, ?);";
-    private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET (key, title, content_model, source, latest_version_timestamp, redirect_target) WHERE VALUES (?, ?, ?, ?, ?, ?);";
+    private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET title = ?, content_model = ?, source = ?, latest_version_timestamp = ? content_model, source, latest_version_timestamp, redirect_target WHERE VALUES (?);";
     private final String DELETE_ARTICLE = "DELETE FROM ARTICLES WHERE key = ?;";
 
     public ArticlesDAO(PostgresSQLJDBC postgresSQLJDBC) {
@@ -102,11 +103,12 @@ public class ArticlesDAO {
         }
     }
 // "INSERT INTO ARTICLES (key, title, content, source, latest_version_timestamp) WHERE VALUES (?, ?, ?, ?, ?);";
-    public boolean setArticle(PageSourcePostgres pageSourcePostgres) {
+    public Optional<PageSourcePostgres> setArticle(PageSourcePostgres pageSourcePostgres) {
         try {
-            if (getByKey(pageSourcePostgres.getKey()).isPresent()) {
+            Optional<PageSourcePostgres> articleKey = getByKey(pageSourcePostgres.getKey());
+            if (articleKey.isPresent()) {
                 logger.info("Article already exists on postgres DB");
-                return true;
+                return articleKey;
             }
             logger.info("Article is new in the DB");
             try (PreparedStatement preparedStatement = postgresSQLJDBC.getConnection().prepareStatement(INSERT_ARTICLE)) {
@@ -117,7 +119,8 @@ public class ArticlesDAO {
                 preparedStatement.setTimestamp(5, Timestamp.valueOf(pageSourcePostgres.getLatest()));
                 preparedStatement.setString(6, pageSourcePostgres.getRedirectTarget());
 
-                return preparedStatement.executeUpdate() == 1;
+                return preparedStatement.executeUpdate() == 1 ? getByKey(pageSourcePostgres.getKey()) : Optional.empty();
+
             }
         } catch (SQLException e) {
             logger.error("Error inserting the article in setArticle");
@@ -126,13 +129,13 @@ public class ArticlesDAO {
     }
 
     // "UPDATE ARTICLES SET (key, title, content, source, latest_version_timestamp) WHERE VALUES (?, ?, ?, ?, ?);";
-    public boolean updateArticle(PageSourcePostgres pageSourcePostgres) {
+    public Optional<PageSourcePostgres> updateArticle(PageSourcePostgres pageSourcePostgres) {
         try {
             if (getByKey(pageSourcePostgres.getKey()).isEmpty()) {
                 logger.info("Article does not exist, as such no update was made");
-                return false;
+                return Optional.empty();
             }
-            logger.info("Article found");
+            logger.info("Article found to update");
             try (PreparedStatement preparedStatement = postgresSQLJDBC.getConnection().prepareStatement(UPDATE_ARTICLE)) {
                 preparedStatement.setString(1, pageSourcePostgres.getKey());
                 preparedStatement.setString(2, pageSourcePostgres.getTitle());
@@ -141,7 +144,7 @@ public class ArticlesDAO {
                 preparedStatement.setTimestamp(5, Timestamp.valueOf(pageSourcePostgres.getLatest()));
                 preparedStatement.setString(6, pageSourcePostgres.getRedirectTarget());
 
-                return preparedStatement.execute();
+                return preparedStatement.executeUpdate() == 1 ? getByKey(pageSourcePostgres.getKey()) : Optional.empty();
             }
         } catch (SQLException e) {
             logger.error("Error updating article = {0}", e);
