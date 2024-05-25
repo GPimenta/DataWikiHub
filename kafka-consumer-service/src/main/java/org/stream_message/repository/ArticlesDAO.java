@@ -159,7 +159,7 @@ public class ArticlesDAO {
             try (PreparedStatement preparedStatement = postgresSQLJDBC.getConnection().prepareStatement(DELETE_ARTICLE)) {
                 preparedStatement.setString(1, key);
 
-                return preparedStatement.execute();
+                return preparedStatement.executeUpdate() == 1;
             }
         } catch (SQLException e) {
             logger.error("Error deleting article");
