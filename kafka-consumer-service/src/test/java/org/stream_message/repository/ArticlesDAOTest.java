@@ -56,7 +56,6 @@ public class ArticlesDAOTest {
                 .source("testingSource3")
                 .redirectTarget("redirectTarget3")
                 .build();
-
     }
 
     @BeforeEach
@@ -216,7 +215,7 @@ public class ArticlesDAOTest {
                 .build();
 
         assertTrue(articlesDAO.setArticle(pageSourcePostgres).isPresent(), "The article should be on DB");
-        assertTrue(articlesDAO.deleteArticle(pageSourcePostgres.getKey()), "The article should be deleted on DB");
+        assertTrue(articlesDAO.deleteArticle(pageSourcePostgres), "The article should be deleted on DB");
         assertTrue(articlesDAO.getByKey(pageSourcePostgres.getKey()).isEmpty(), "The article should not be in DB");
     }
 }

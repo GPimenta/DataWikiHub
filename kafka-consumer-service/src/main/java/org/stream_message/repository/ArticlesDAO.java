@@ -22,7 +22,7 @@ public class ArticlesDAO {
     private final String QUERY_id = "SELECT id, key, title, content_model, source, latest_version_timestamp, redirect_target FROM ARTICLES WHERE id = ?;";
     private final String QUERY_key = "SELECT id, key, title, content_model, source, latest_version_timestamp, redirect_target FROM ARTICLES WHERE key = ?;";
     private final String INSERT_ARTICLE = "INSERT INTO ARTICLES (key, title, content_model, source, latest_version_timestamp, redirect_target) VALUES (?, ?, ?, ?, ?, ?);";
-    private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET title = ?, content_model = ?, source = ?, latest_version_timestamp = ? content_model, source, latest_version_timestamp, redirect_target WHERE VALUES (?);";
+    private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET title = ?, content_model = ?, source = ?, latest_version_timestamp = ? content_model, source, latest_version_timestamp, redirect_target WHERE key = ? ;";
     private final String DELETE_ARTICLE = "DELETE FROM ARTICLES WHERE key = ?;";
 
     public ArticlesDAO(PostgresSQLJDBC postgresSQLJDBC) {
@@ -152,15 +152,15 @@ public class ArticlesDAO {
         }
     }
 
-    public boolean deleteArticle(String key) {
+    public boolean deleteArticle(PageSourcePostgres pageSourcePostgres) {
         try {
-            if (getByKey(key).isEmpty()) {
+            if (getByKey(pageSourcePostgres.getKey()).isEmpty()) {
                 logger.info("Article does not exist, as such no delete was made");
                 return false;
             }
             logger.info("Article found");
             try (PreparedStatement preparedStatement = postgresSQLJDBC.getConnection().prepareStatement(DELETE_ARTICLE)) {
-                preparedStatement.setString(1, key);
+                preparedStatement.setString(1, pageSourcePostgres.getKey());
 
                 return preparedStatement.executeUpdate() == 1;
             }

@@ -30,4 +30,12 @@ public class ArticlesController {
         return articlesDAO.setArticle(pageSourcePostgres).orElseThrow(() -> new RuntimeException("Unable to set the article on the DB"));
     }
 
+    public PageSourcePostgres updateArticle(PageSourcePostgres pageSourcePostgres) {
+        return articlesDAO.updateArticle(pageSourcePostgres). orElseThrow(() -> new RuntimeException("Unable to update the article on the DB"));
+    }
+
+    public boolean deleteArticle(PageSourcePostgres pageSourcePostgres) {
+        return articlesDAO.deleteArticle(pageSourcePostgres);
+    }
+
 }
