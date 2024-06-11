@@ -29,10 +29,10 @@ public class ArticlesDAO {
         this.postgresSQLJDBC = postgresSQLJDBC;
     }
 
-    public Optional<List<PageSourcePostgres>> getAllArticles() {
+    public List<Optional<PageSourcePostgres>> getAllArticles() {
         try (PreparedStatement preparedStatement = postgresSQLJDBC.getConnection().prepareStatement(SELECT_ALL_ARTICLES)) {
             ResultSet resultSet = preparedStatement.executeQuery();
-            List<PageSourcePostgres> pageSourcePostgresList = new ArrayList<>();
+            List<Optional<PageSourcePostgres>> pageSourcePostgresList = new ArrayList<>();
 
             while (resultSet.next()) {
                 PageSourcePostgres pageSource = new PageSourcePostgres.Builder()
@@ -44,9 +44,9 @@ public class ArticlesDAO {
                         .source(resultSet.getString("source"))
                         .redirectTarget(resultSet.getString("redirect_target"))
                         .build();
-                pageSourcePostgresList.add(pageSource);
+                pageSourcePostgresList.add(Optional.of(pageSource));
             }
-            return Optional.of(pageSourcePostgresList);
+            return pageSourcePostgresList;
         } catch (SQLException e) {
             logger.error("Error using SELECT * FROM ARTICLES query");
             throw new RuntimeException(e);

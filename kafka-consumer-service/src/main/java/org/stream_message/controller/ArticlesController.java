@@ -4,6 +4,7 @@ import org.stream_message.model.PageSourcePostgres;
 import org.stream_message.repository.ArticlesDAO;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ArticlesController {
 
@@ -13,9 +14,8 @@ public class ArticlesController {
         this.articlesDAO = articlesDAO;
     }
 
-    public List<PageSourcePostgres> getAllArticles(){
-       return articlesDAO.getAllArticles().orElseThrow(() -> new RuntimeException("Unable to get all articles"));
-
+    public List<PageSourcePostgres> getAllArticles() {
+       return articlesDAO.getAllArticles().stream().map(articlesDAO -> articlesDAO.orElseThrow(() -> new RuntimeException("Unable to get all articles"))).collect(Collectors.toList());
     }
 
     public PageSourcePostgres getById(int id) {

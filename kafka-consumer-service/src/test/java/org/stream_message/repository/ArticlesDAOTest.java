@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -91,9 +93,12 @@ public class ArticlesDAOTest {
 
     @Test
     public void getAllArticles() {
-        Optional<PageSourcePostgres> retrievedArticle1 = articlesDAO.getByKey(testArticle1.getKey());
-        Optional<PageSourcePostgres> retrievedArticle2 = articlesDAO.getByKey(testArticle2.getKey());
-        Optional<PageSourcePostgres> retrievedArticle3 = articlesDAO.getByKey(testArticle3.getKey());
+        List<Optional<PageSourcePostgres>> allArticles = articlesDAO.getAllArticles();
+        assertTrue(allArticles.stream().map(Optional::isPresent).reduce(true, (subtotal, element) -> subtotal && element), "All articles are present in the list");
+
+        Optional<PageSourcePostgres> retrievedArticle1 = allArticles.stream().filter(articlesDAO -> Objects.equals(articlesDAO.get().getKey(), testArticle1.getKey())).findFirst().get();
+        Optional<PageSourcePostgres> retrievedArticle2 = allArticles.stream().filter(articlesDAO -> Objects.equals(articlesDAO.get().getKey(), testArticle2.getKey())).findFirst().get();
+        Optional<PageSourcePostgres> retrievedArticle3 = allArticles.stream().filter(articlesDAO -> Objects.equals(articlesDAO.get().getKey(), testArticle3.getKey())).findFirst().get();
 
         assertTrue(retrievedArticle1.isPresent(), "The article should be present in the database");
 
@@ -204,7 +209,7 @@ public class ArticlesDAOTest {
     }
 
     @Test
-    public void deleteArticle() {
+    public void deleteArticleTest() {
         PageSourcePostgres pageSourcePostgres = new PageSourcePostgres.Builder()
                 .key("testingKeySetArticle")
                 .title("testingTitleSetArticle")
