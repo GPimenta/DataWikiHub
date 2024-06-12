@@ -11,11 +11,13 @@ public class PageSource {
     private String key;
     private String title;
     private Latest latest;
+
+    @SerializedName("content_model")
     private String contentModel;
     private License license;
     private String source;
 
-    @SerializedName("optionalField")
+    @SerializedName("redirect_target")
     @Nullable
     private String redirectTarget;
 

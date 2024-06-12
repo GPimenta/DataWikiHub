@@ -1,14 +1,17 @@
 package org.wikipedia.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wikipedia.model.PageSource;
 import org.wikipedia.model.PageSourceWithHTML;
+import org.wikipedia.util.LocalDateTimeAdapter;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -17,17 +20,29 @@ public class EndpointsHandle {
     private static Logger logger = LoggerFactory.getLogger(EndpointsHandle.class);
 
     final private String baseUrl;
-    final private Gson gson = new Gson();
+    final private Gson gson;
+    private OkHttpClient client;
 
 
     public EndpointsHandle(String baseUrl) {
-        this.baseUrl = baseUrl;
+        this(baseUrl, new OkHttpClient.Builder()
+                .connectTimeout(Duration.ofSeconds(15))
+                .readTimeout(Duration.ofSeconds(15))
+                .build());
     }
 
-    final private OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(Duration.ofSeconds(15))
-            .readTimeout(Duration.ofSeconds(15))
-            .build();
+    public EndpointsHandle(String baseUrl, OkHttpClient client) {
+        this.baseUrl = baseUrl;
+        this.client = client;
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
+    }
+
+//    final private OkHttpClient client = new OkHttpClient.Builder()
+//            .connectTimeout(Duration.ofSeconds(15))
+//            .readTimeout(Duration.ofSeconds(15))
+//            .build();
 
     public Request createRequest(String method, String path, String payload) {
         Request.Builder builder = new Request.Builder()
@@ -69,7 +84,7 @@ public class EndpointsHandle {
     public Optional<PageSource> getPageSource(String path) {
         Request request = createRequest("GET", path);
         Optional<PageSource> pageSourceOptional = executeRequest(request, PageSource.class);
-        if (pageSourceOptional.isPresent() && pageSourceOptional.get().getRedirectTarget() == null) {
+        if (pageSourceOptional.isPresent() && pageSourceOptional.get().getRedirectTarget() != null) {
             pageSourceOptional.get().setRedirectTarget("Redirection exists");
         }
         return pageSourceOptional;
@@ -78,7 +93,7 @@ public class EndpointsHandle {
     public Optional<PageSourceWithHTML> getPageSourceWithHTML(String path) {
         Request request = createRequest("GET", path);
         Optional<PageSourceWithHTML> pageSourceWithHTMLOptional = executeRequest(request, PageSourceWithHTML.class);
-        if (pageSourceWithHTMLOptional.isPresent() && pageSourceWithHTMLOptional.get().getRedirectTarget() == null) {
+        if (pageSourceWithHTMLOptional.isPresent() && pageSourceWithHTMLOptional.get().getRedirectTarget() != null) {
             pageSourceWithHTMLOptional.get().setRedirectTarget("Redirection exists");
         }
         return pageSourceWithHTMLOptional;
