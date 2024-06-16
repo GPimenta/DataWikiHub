@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.wikipedia.model.PageSource;
 import org.wikipedia.model.PageSourceWithHTML;
+import org.wikipedia.model.RandomWord;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -21,10 +22,15 @@ import static org.mockito.Mockito.when;
 
 public class EndpointsHandleTest {
 
-    private String baseUrl = "https://en.wikipedia.org/w/rest.php/v1/page";
-    private String path = "/AI";
+    private String baseUrlWikipedia = "https://en.wikipedia.org/w/rest.php/v1/page";
+    private String pathWikipedia = "/AI";
     private String pathWithHTML = "/with_html";
-    private EndpointsHandle endpointsHandle;
+    private EndpointsHandle endpointsHandleWikipedia;
+
+    private String baseUrlRandomWord = "https://random-word-api.herokuapp.com";
+    private String pathRandomWord= "/word";
+    private EndpointsHandle getEndpointsHandleRandomWord;
+
     private OkHttpClient mockClient;
     private Call mockCall;
     private Response mockResponse;
@@ -36,7 +42,7 @@ public class EndpointsHandleTest {
         mockCall = mock(Call.class);
         mockResponse = mock(Response.class);
         mockBody = mock(ResponseBody.class);
-        endpointsHandle = new EndpointsHandle(baseUrl, mockClient);
+        endpointsHandleWikipedia = new EndpointsHandle(baseUrlWikipedia, mockClient);
     }
 
     @Test
@@ -50,8 +56,8 @@ public class EndpointsHandleTest {
         when(mockResponse.body()).thenReturn(responseBody);
         when(mockBody.string()).thenReturn(jsonResponse);
 
-        Request request = endpointsHandle.createRequest("GET", path);
-        Optional<PageSource> result = endpointsHandle.executeRequest(request, PageSource.class);
+        Request request = endpointsHandleWikipedia.createRequest("GET", pathWikipedia);
+        Optional<PageSource> result = endpointsHandleWikipedia.executeRequest(request, PageSource.class);
 
         assertTrue(result.isPresent());
         PageSource pageSource = result.get();
@@ -71,8 +77,8 @@ public class EndpointsHandleTest {
 
     @Test
     public void getGenericPrintTest() {
-        EndpointsHandle endpointsHandle = new EndpointsHandle(baseUrl);
-        Request request = endpointsHandle.createRequest("GET", path);
+        EndpointsHandle endpointsHandle = new EndpointsHandle(baseUrlWikipedia);
+        Request request = endpointsHandle.createRequest("GET", pathWikipedia);
         Optional<PageSource> s = endpointsHandle.executeRequest(request, PageSource.class);
         System.out.println(s.get());
     }
@@ -90,7 +96,7 @@ public class EndpointsHandleTest {
         when(mockBody.string()).thenReturn(jsonResponse);
 
 
-        Optional<PageSource> pageSourceOptional = endpointsHandle.getPageSource(path);
+        Optional<PageSource> pageSourceOptional = endpointsHandleWikipedia.getPageSource(pathWikipedia);
 
         assertTrue(pageSourceOptional.isPresent());
         PageSource pageSource = pageSourceOptional.get();
@@ -115,16 +121,24 @@ public class EndpointsHandleTest {
 
     @Test
     public void getPageSourcePrintTest() {
-        EndpointsHandle endpointsHandle = new EndpointsHandle(baseUrl);
-        Optional<PageSource> pageSource = endpointsHandle.getPageSource(path);
+        EndpointsHandle endpointsHandle = new EndpointsHandle(baseUrlWikipedia);
+        Optional<PageSource> pageSource = endpointsHandle.getPageSource(pathWikipedia);
         System.out.println(pageSource.get());
     }
 
     @Test
     public void getPageSourceWithHTMLTest() throws IOException {
-        EndpointsHandle endpointsHandle = new EndpointsHandle(baseUrl);
-        Optional<PageSourceWithHTML> pageSource = endpointsHandle.getPageSourceWithHTML(path + pathWithHTML);
+        EndpointsHandle endpointsHandle = new EndpointsHandle(baseUrlWikipedia);
+        Optional<PageSourceWithHTML> pageSource = endpointsHandle.getPageSourceWithHTML(pathWikipedia + pathWithHTML);
         System.out.println(pageSource.get());
+
+    }
+
+    @Test
+    public void getRandomWordPageTest() {
+        getEndpointsHandleRandomWord = new EndpointsHandle(baseUrlRandomWord);
+        Optional<RandomWord> randomWordPage = getEndpointsHandleRandomWord.getRandomWordPage(pathRandomWord);
+        randomWordPage.get().getWord().forEach(System.out::println);
 
     }
 

@@ -35,6 +35,9 @@ public class Producer {
             public void onCompletion(RecordMetadata recordMetadata, Exception e) {
                 if (e == null) {
                     logger.info("\u001B[32m" + "Message sent to topic: {}, partition {}, offset {}" + "\u001B[0m", recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
+                } else {
+                    logger.error("Exception occurred when sending message to kafka producer");
+                    throw new RuntimeException("Exception occurred when sending message to kafka producer");
                 }
 
             }

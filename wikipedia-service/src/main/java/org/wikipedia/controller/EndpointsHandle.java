@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wikipedia.model.PageSource;
 import org.wikipedia.model.PageSourceWithHTML;
+import org.wikipedia.model.RandomWord;
 import org.wikipedia.util.LocalDateTimeAdapter;
+import org.wikipedia.util.RandomWordDeserializer;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -36,6 +38,7 @@ public class EndpointsHandle {
         this.client = client;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .registerTypeAdapter(RandomWord.class, new RandomWordDeserializer())
                 .create();
     }
 
@@ -67,8 +70,8 @@ public class EndpointsHandle {
     public <T> Optional<T> executeRequest(Request request, Class<T> clazz) {
         try (Response response = client.newCall(request).execute()){
             if (response.code() >= 400) {
-                logger.error("Unexpected status code{}", response.code());
-                throw new RuntimeException("Unexpected status code" + response.code());
+                logger.error("Unexpected status code {}", response.code());
+                throw new RuntimeException("Unexpected status code " + response.code());
             }
             String payload = response.body().string();
             if (clazz == String.class) {
@@ -88,6 +91,11 @@ public class EndpointsHandle {
             pageSourceOptional.get().setRedirectTarget("Redirection exists");
         }
         return pageSourceOptional;
+    }
+
+    public Optional<RandomWord> getRandomWordPage(String path) {
+        Request request = createRequest("GET", path);
+        return executeRequest(request, RandomWord.class);
     }
 
     public Optional<PageSourceWithHTML> getPageSourceWithHTML(String path) {
