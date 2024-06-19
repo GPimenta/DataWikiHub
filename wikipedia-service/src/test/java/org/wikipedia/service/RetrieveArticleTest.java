@@ -26,6 +26,8 @@ public class RetrieveArticleTest {
     final private Gson gson = new Gson();
 
 
+
+
     EndpointsHandle endpointsHandleWikipedia = new EndpointsHandle(baseUrlWikipedia);
 //    EndpointsHandle endpointsHandleRandomWord = new EndpointsHandle(baseUrlRandomWord);
     Producer producer = new Producer(PropertiesConfiguration.simpleProducerProperty(bootstrap, StringSerializer.class.getName(), StringSerializer.class.getName()), topic);
