@@ -51,7 +51,7 @@ public class RetrieveArticle {
 
     public PageSource getPageSourceWithRandomWord(String word) {
         try {
-            return getPageSource("/" + word);
+            return getPageSource(word);
         } catch (Exception e) {
             throw new RuntimeException("Error in getting the wikipedia article with random word");
         }

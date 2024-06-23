@@ -16,8 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
-
 public class EndpointsHandleTest {
 
     private String baseUrlWikipedia = "https://en.wikipedia.org/w/rest.php/v1/page";
@@ -137,9 +135,5 @@ public class EndpointsHandleTest {
         getEndpointsHandleRandomWord = new EndpointsHandle(baseUrlRandomWord);
         Optional<RandomWord> randomWordPage = getEndpointsHandleRandomWord.getRandomWordPage(pathRandomWord);
         randomWordPage.get().getWord().forEach(System.out::println);
-
     }
-
-
-
 }
