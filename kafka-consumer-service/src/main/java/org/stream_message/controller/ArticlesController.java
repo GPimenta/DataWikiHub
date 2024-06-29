@@ -31,7 +31,7 @@ public class ArticlesController {
     }
 
     public PageSourcePostgres updateArticle(PageSourcePostgres pageSourcePostgres) {
-        return articlesDAO.updateArticle(pageSourcePostgres). orElseThrow(() -> new RuntimeException("Unable to update the article on the DB"));
+        return articlesDAO.updateArticle(pageSourcePostgres).orElseThrow(() -> new RuntimeException("Unable to update the article on the DB"));
     }
 
     public boolean deleteArticle(PageSourcePostgres pageSourcePostgres) {

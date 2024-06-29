@@ -88,15 +88,14 @@ public class RetrieveArticleIntegrationTest {
     public void articlesToProducerTest() {
 
         String key = "test";
-        String value = "{\n" +
-                "  \"id\": 1,\n" +
-                "  \"key\": \"test\",\n" +
-                "  \"title\": \"Test Title\",\n" +
-                "  \"latest\": {\"id\": 1234},\n" +
-                "  \"content_model\": \"wikitext\",\n" +
-                "  \"license\": {\"url\": \"https://example.com\", \"name\": \"Example License\"},\n" +
-                "  \"source\": \"source content\",\n" +
-                "  \"redirect_target\": null\n" +
+        String value = "{" +
+                "\"id\":1," +
+                "\"key\":\"test\"," +
+                "\"title\":\"Test Title\"," +
+                "\"latest\":{\"id\":1234}," +
+                "\"content_model\":\"wikitext\"," +
+                "\"license\":{\"url\":\"https://example.com\",\"title\":\"Example License\"}," +
+                "\"source\":\"source content\"" +
                 "}";
 
         MockServerClient mockServerClient = new MockServerClient(
@@ -107,7 +106,7 @@ public class RetrieveArticleIntegrationTest {
 //        mockServerClient.when(HttpRequest.request().withPath("/word"))
 //                .respond(HttpResponse.response().withBody("{\"word\":[\"TestWord\"]}"));
 
-        mockServerClient.when(HttpRequest.request().withPath("/TestWord"))
+        mockServerClient.when(HttpRequest.request().withPath("/word"))
                 .respond(HttpResponse.response().withBody(value));
 
         retrieveArticle.articlesToProducer(1);
@@ -115,7 +114,7 @@ public class RetrieveArticleIntegrationTest {
         ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
 
         for (ConsumerRecord<String, String> record : records) {
-            System.out.println("HERE " + record.key() + " " + record.value());
+//            System.out.println("HERE " + record.key() + " " + record.value());
             assertEquals(key, record.key(), "Topic key are not being consumed correctly");
             assertEquals(value, record.value(), "Topic value are not being consumed correctly");
         }
