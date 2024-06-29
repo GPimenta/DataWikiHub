@@ -1,14 +1,22 @@
-package org.wikipedia.controller;
+package org.wikipedia.service;
+
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.MockConsumer;
+import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.*;
+import org.mockserver.client.MockServerClient;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.wikipedia.controller.EndpointsHandle;
+import org.wikipedia.controller.Producer;
 import org.wikipedia.util.DockerComposeManager;
 import org.wikipedia.util.PropertiesConfiguration;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Duration;
 import java.util.List;
@@ -18,9 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
-public class ProducerTest {
+public class RetrieveArticleIntegrationTest {
     private static final String KAFKA_SERVICE = "broker";
     private static final int KAFKA_PORT = 9092;
+    private static final String MOCKSERVER_SERVICE = "mockserver";
+    private static final int MOCKSERVER_PORT = 1080;
+
     private KafkaConsumer<String, String> consumer;
     private Producer producer;
     private DockerComposeManager dockerComposeManager;
@@ -32,6 +43,10 @@ public class ProducerTest {
     private final String groupId = "test-group";
     private final String topic = "test-topic";
     private final String offSetReset = "earliest";
+
+    private RetrieveArticle retrieveArticle;
+
+    private EndpointsHandle endpointsHandle;
 
     @BeforeAll
     public void setUpClass() {
@@ -46,8 +61,12 @@ public class ProducerTest {
 
     @BeforeEach
     public void setUp() {
+
         String kafkaBootstrapServers = dockerComposeManager.getServiceHost(KAFKA_SERVICE, KAFKA_PORT) +
                 ":" + dockerComposeManager.getServicePort(KAFKA_SERVICE, KAFKA_PORT);
+        String mockserverUrl = "http://" + dockerComposeManager.getServiceHost(MOCKSERVER_SERVICE, MOCKSERVER_PORT)
+                + ":" + dockerComposeManager.getServicePort(MOCKSERVER_SERVICE, MOCKSERVER_PORT);
+
         Properties consumerProperty = PropertiesConfiguration.simpleConsumerProperty(kafkaBootstrapServers, keyDeserializerClassName, valueDeserializerClassName, groupId, offSetReset);
         Properties producerProperty = PropertiesConfiguration.simpleProducerProperty(kafkaBootstrapServers, keySerializerClassName, valueSerializerClassName);
 
@@ -55,6 +74,9 @@ public class ProducerTest {
         consumer.subscribe(List.of(topic));
 
         producer = new Producer(producerProperty, topic);
+
+        endpointsHandle = new EndpointsHandle(mockserverUrl);
+        retrieveArticle = new RetrieveArticle(endpointsHandle, producer);
     }
 
     @AfterEach
@@ -63,31 +85,39 @@ public class ProducerTest {
     }
 
     @Test
-    public void testProducer() {
-        String key = "test-key";
-        String value = "test-value";
-        producer.producerCallBack(key, value);
+    public void articlesToProducerTest() {
+
+        String key = "test";
+        String value = "{" +
+                "\"id\":1," +
+                "\"key\":\"test\"," +
+                "\"title\":\"Test Title\"," +
+                "\"latest\":{\"id\":1234}," +
+                "\"content_model\":\"wikitext\"," +
+                "\"license\":{\"url\":\"https://example.com\",\"title\":\"Example License\"}," +
+                "\"source\":\"source content\"" +
+                "}";
+
+        MockServerClient mockServerClient = new MockServerClient(
+                dockerComposeManager.getServiceHost(MOCKSERVER_SERVICE, MOCKSERVER_PORT),
+                dockerComposeManager.getServicePort(MOCKSERVER_SERVICE, MOCKSERVER_PORT)
+        );
+
+//        mockServerClient.when(HttpRequest.request().withPath("/word"))
+//                .respond(HttpResponse.response().withBody("{\"word\":[\"TestWord\"]}"));
+
+        mockServerClient.when(HttpRequest.request().withPath("/word"))
+                .respond(HttpResponse.response().withBody(value));
+
+        retrieveArticle.articlesToProducer(1);
 
         ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
 
         for (ConsumerRecord<String, String> record : records) {
-            System.out.println("HERE " + record.key() + " " + record.value());
+//            System.out.println("HERE " + record.key() + " " + record.value());
             assertEquals(key, record.key(), "Topic key are not being consumed correctly");
             assertEquals(value, record.value(), "Topic value are not being consumed correctly");
         }
     }
 
-    @Test
-    public void producerCallBackTest() {
-//        String bootStrapServer = "localhost:9092";
-//        String keyDeserializerClassName = StringSerializer.class.getName();
-//        String valueDeserializerClassName = StringSerializer.class.getName();
-//        Properties properties = PropertiesConfiguration.simpleProducerProperty(bootStrapServer, keySerializerClassName, valueSerializerClassName);
-//        String topicName = "topicTest";
-//        String key = "keyTest";
-//        String value = "valueTest";
-//        Producer producer = new Producer(properties, topicName);
-//        producer.producerCallBack(key, value);
-    }
 }
-

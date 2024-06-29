@@ -5,7 +5,7 @@ services:
   broker:
     image: confluentinc/cp-server:7.5.0
     hostname: broker
-    container_name: broker
+#    container_name: broker
     ports:
       - "9092:9092"
       - "9101:9101"
@@ -34,7 +34,7 @@ services:
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.0
     hostname: schema-registry
-    container_name: schema-registry
+#    container_name: schema-registry
     depends_on:
       - broker
     ports:
@@ -47,7 +47,7 @@ services:
   connect:
     image: cnfldemos/cp-server-connect-datagen:0.6.2-7.5.0
     hostname: connect
-    container_name: connect
+#    container_name: connect
     depends_on:
       - broker
       - schema-registry
@@ -77,7 +77,7 @@ services:
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.5.0
     hostname: control-center
-    container_name: control-center
+#    container_name: control-center
     depends_on:
       - broker
       - schema-registry
@@ -100,7 +100,7 @@ services:
   ksqldb-server:
     image: confluentinc/cp-ksqldb-server:7.5.0
     hostname: ksqldb-server
-    container_name: ksqldb-server
+#    container_name: ksqldb-server
     depends_on:
       - broker
       - connect
@@ -122,7 +122,7 @@ services:
 
   ksqldb-cli:
     image: confluentinc/cp-ksqldb-cli:7.5.0
-    container_name: ksqldb-cli
+#    container_name: ksqldb-cli
     depends_on:
       - broker
       - connect
@@ -133,7 +133,7 @@ services:
   ksql-datagen:
     image: confluentinc/ksqldb-examples:7.5.0
     hostname: ksql-datagen
-    container_name: ksql-datagen
+#    container_name: ksql-datagen
     depends_on:
       - ksqldb-server
       - broker
@@ -160,7 +160,7 @@ services:
     ports:
       - 8082:8082
     hostname: rest-proxy
-    container_name: rest-proxy
+#    container_name: rest-proxy
     environment:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:29092'
@@ -170,7 +170,7 @@ services:
   flink-sql-client:
     image: cnfldemos/flink-sql-client-kafka:1.16.0-scala_2.12-java11
     hostname: flink-sql-client
-    container_name: flink-sql-client
+#    container_name: flink-sql-client
     depends_on:
       - flink-jobmanager
     environment:
@@ -181,7 +181,7 @@ services:
   flink-jobmanager:
     image: cnfldemos/flink-kafka:1.16.0-scala_2.12-java11
     hostname: flink-jobmanager
-    container_name: flink-jobmanager
+#    container_name: flink-jobmanager
     ports:
       - 9081:9081
     command: jobmanager
@@ -194,7 +194,7 @@ services:
   flink-taskmanager:
     image: cnfldemos/flink-kafka:1.16.0-scala_2.12-java11
     hostname: flink-taskmanager
-    container_name: flink-taskmanager
+#    container_name: flink-taskmanager
     depends_on:
       - flink-jobmanager
     command: taskmanager
@@ -204,3 +204,8 @@ services:
         FLINK_PROPERTIES=
         jobmanager.rpc.address: flink-jobmanager
         taskmanager.numberOfTaskSlots: 10
+
+  mockserver:
+    image: mockserver/mockserver:latest
+    ports:
+      - "1080:1080"
