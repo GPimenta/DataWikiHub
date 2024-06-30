@@ -1,0 +1,1 @@
+GET /health org.example.controller.PageSourcePostgresController.health()

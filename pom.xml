@@ -12,6 +12,7 @@
   <modules>
     <module>wikipedia-service</module>
     <module>kafka-consumer-service</module>
+      <module>play-sample</module>
   </modules>
 
   <properties>
@@ -204,24 +205,23 @@
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <plugins>
-      <plugin>
-        <groupId>org.apache.avro</groupId>
-        <artifactId>avro-maven-plugin</artifactId>
-        <version>${avro.version}</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>schema</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>
-              <outputDirectory>${project.basedir}/src/main/scala</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
+<!--      <plugin>-->
+<!--        <groupId>org.apache.avro</groupId>-->
+<!--        <artifactId>avro-maven-plugin</artifactId>-->
+<!--        <version>${avro.version}</version>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <phase>generate-sources</phase>-->
+<!--            <goals>-->
+<!--              <goal>schema</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>-->
+<!--              <outputDirectory>${project.basedir}/src/main/scala</outputDirectory>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
     </plugins>
   </build>
 
