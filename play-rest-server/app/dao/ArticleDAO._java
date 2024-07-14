@@ -1,0 +1,65 @@
+package dao;
+import jakarta.persistence.TypedQuery;
+import models.Article;
+import play.db.jpa.JPAApi;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Optional;
+
+public class ArticleDAO {
+
+    private final JPAApi jpaApi;
+
+    @Inject
+    public ArticleDAO(JPAApi jpaApi) {
+        this.jpaApi = jpaApi;
+    }
+
+    public List<Article> findAll() {
+        return jpaApi.withTransaction(entityManager -> {
+            TypedQuery<Article> query = entityManager
+                    .createQuery("SELECT a FROM Article a", Article.class);
+            return query.getResultList();
+        });
+    }
+
+    public Optional<Article> findById(int id) {
+        return jpaApi.withTransaction(entityManager -> {
+            Article article = entityManager.find(Article.class, id);
+            return Optional.ofNullable(article);
+        });
+    }
+
+    public Optional<Article> findByTitle(String title) {
+        return jpaApi.withTransaction(entityManager -> {
+            TypedQuery<Article> query = entityManager
+                    .createQuery("SELECT a FROM Article a WHERE a.title = :title", Article.class);
+            query.setParameter("title", title);
+            List<Article> results = query.getResultList();
+            return results.isEmpty() ? Optional.empty(): Optional.of(results.get(0));
+        });
+    }
+
+    public Article create(Article article) {
+        return jpaApi.withTransaction(entityManager -> {
+            entityManager.persist(article);
+            return article;
+        });
+    }
+
+    public Article update(Article article) {
+        return jpaApi.withTransaction(entityManager -> {
+            return entityManager.merge(article);
+        });
+    }
+
+    public void delete(int id) {
+        jpaApi.withTransaction(entityManager -> {
+            Article article = entityManager.find(Article.class, id);
+            if (article != null) {
+                entityManager.remove(article);
+            }
+        });
+    }
+}
