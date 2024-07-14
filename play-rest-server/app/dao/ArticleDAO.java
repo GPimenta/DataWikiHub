@@ -6,9 +6,8 @@ import play.db.jpa.JPAApi;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import jakarta.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -31,7 +30,7 @@ public class ArticleDAO {
 
     private Stream<Article> select(EntityManager entityManager) {
         TypedQuery<Article> query = entityManager.createQuery("SELECT a FROM Article a", Article.class);
-        return query.getResultList().stream()
+        return query.getResultList().stream();
     }
 
 
