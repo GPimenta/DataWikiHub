@@ -3,6 +3,8 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.Article;
 import play.libs.Json;
+import play.libs.concurrent.ClassLoaderExecution;
+import play.libs.concurrent.ClassLoaderExecutionContext;
 import play.mvc.*;
 
 import javax.inject.Inject;
@@ -15,7 +17,11 @@ import java.util.Optional;
  * This controller contains an action to handle HTTP requests
  * to the application's home page.
  */
+//@With()
 public class HomeController extends Controller {
+
+    private ClassLoaderExecutionContext ec;
+//    private PostResourceHandler handler
 
     /**
      * An action that renders an HTML page with a welcome message.

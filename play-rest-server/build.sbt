@@ -14,5 +14,7 @@ libraryDependencies ++= Seq(
 //  "org.playframework" %% "play-slick-evolutions" % "6.1.0",
 //  "jakarta.persistence" % "jakarta.persistence-api" % "3.0.0",
   "org.hibernate" % "hibernate-core" % "5.4.32.Final",
+  "net.jodah" % "failsafe" % "2.4.4",
+  "io.dropwizard.metrics" % "metrics-core" % "4.2.26",
   javaJpa
 )
