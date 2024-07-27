@@ -16,5 +16,6 @@ libraryDependencies ++= Seq(
   "org.hibernate" % "hibernate-core" % "5.4.32.Final",
   "net.jodah" % "failsafe" % "2.4.4",
   "io.dropwizard.metrics" % "metrics-core" % "4.2.26",
+  "com.palominolabs.http" % "url-builder" % "1.1.5",
   javaJpa
 )

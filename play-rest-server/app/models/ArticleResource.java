@@ -1,20 +1,14 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
-@Table(name = "articles")
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Article {
+public class ArticleResource {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String link;
     private String key;
     private String title;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -23,7 +17,8 @@ public class Article {
     private String source;
     private String redirectTarget;
 
-    public Article( String key, String title, LocalDateTime latest, String contentModel, String source, String redirectTarget) {
+    public ArticleResource(int id, String link, String key, String title, LocalDateTime latest, String contentModel, String source, String redirectTarget) {
+        this.link = link;
         this.key = key;
         this.title = title;
         this.latest = latest;
@@ -32,12 +27,31 @@ public class Article {
         this.redirectTarget = redirectTarget;
     }
 
+    public ArticleResource(Article article, String link) {
+        this.id = article.getId();
+        this.link = link;
+        this.key = article.getKey();
+        this.title = article.getTitle();
+        this.latest = article.getLatest();
+        this.contentModel = article.getContentModel();
+        this.source = article.getSource();
+        this.redirectTarget = article.getRedirectTarget();
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public String getKey() {
@@ -92,19 +106,20 @@ public class Article {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Article article = (Article) o;
-        return id == article.id && Objects.equals(key, article.key) && Objects.equals(title, article.title) && Objects.equals(latest, article.latest) && Objects.equals(contentModel, article.contentModel) && Objects.equals(source, article.source) && Objects.equals(redirectTarget, article.redirectTarget);
+        ArticleResource that = (ArticleResource) o;
+        return id == that.id && Objects.equals(link, that.link) && Objects.equals(key, that.key) && Objects.equals(title, that.title) && Objects.equals(latest, that.latest) && Objects.equals(contentModel, that.contentModel) && Objects.equals(source, that.source) && Objects.equals(redirectTarget, that.redirectTarget);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, title, latest, contentModel, source, redirectTarget);
+        return Objects.hash(id, link, key, title, latest, contentModel, source, redirectTarget);
     }
 
     @Override
     public String toString() {
-        return "Article{" +
+        return "ArticleResource{" +
                 "id=" + id +
+                ", link='" + link + '\'' +
                 ", key='" + key + '\'' +
                 ", title='" + title + '\'' +
                 ", latest=" + latest +
