@@ -20,11 +20,11 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 public class ArticleDAO {
 
     private final JPAApi jpaApi;
-    private final PostExecutionContext ec;
+    private final ArticleExecutionContext ec;
     private final CircuitBreaker<Optional<Article>> circuitBreaker = new CircuitBreaker<Optional<Article>>().withFailureThreshold(1).withSuccessThreshold(3);
 
     @Inject
-    public ArticleDAO(JPAApi jpaApi, PostExecutionContext ec) {
+    public ArticleDAO(JPAApi jpaApi, ArticleExecutionContext ec) {
         this.jpaApi = jpaApi;
         this.ec = ec;
     }

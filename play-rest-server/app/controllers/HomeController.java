@@ -95,39 +95,4 @@ public class HomeController extends Controller {
         System.out.println(article);
         return ok();
     }
-
-//    @Inject
-//    private ArticleDAO articleDAO;
-//
-//    public Result getAllArticles() {
-//        List<Article> articles = articleDAO.findAll();
-//        return ok(Json.toJson(articles));
-//    }
-//
-//    public Result getArticleById(int id) {
-//        Optional<Article> byId = articleDAO.findById(id);
-//
-//        if (byId.isPresent()) {
-//            return ok(Json.toJson(byId.get()));
-//        }
-//        else {
-//            return notFound("Article not found by Id");
-//        }
-//    }
-//
-//    public Result getArticleByTitle(String title) {
-//        Optional<Article> byTitle = articleDAO.findByTitle(title);
-//
-//        if (byTitle.isPresent()) {
-//            return ok(Json.toJson(byTitle.get()));
-//        }
-//        else {
-//            return notFound("Article not found by Title");
-//        }
-//    }
-
-//    public Result createArticle() {
-//        JsonNode json = request
-//    }
-
 }
