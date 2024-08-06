@@ -88,11 +88,11 @@ public class HomeController extends Controller {
         return ok(views.html.index.render());
     }
 
-    @BodyParser.Of(BodyParser.Json.class)
-    public Result createArticle(Http.Request request) {
-        JsonNode jsonNode = request.body().asJson();
-        Article article = Json.fromJson(jsonNode, Article.class);
-        System.out.println(article);
-        return ok();
-    }
+//    @BodyParser.Of(BodyParser.Json.class)
+//    public Result createArticle(Http.Request request) {
+//        JsonNode jsonNode = request.body().asJson();
+//        Article article = Json.fromJson(jsonNode, Article.class);
+//        System.out.println(article);
+//        return ok();
+//    }
 }

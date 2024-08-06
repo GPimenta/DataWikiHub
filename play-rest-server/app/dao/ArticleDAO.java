@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
-public class ArticleDAO {
+public class ArticleDAO implements ArticleRepository{
 
     private final JPAApi jpaApi;
     private final ArticleExecutionContext ec;

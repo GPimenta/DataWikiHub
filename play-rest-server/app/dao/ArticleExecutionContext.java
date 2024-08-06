@@ -10,6 +10,6 @@ public class ArticleExecutionContext extends CustomExecutionContext {
 
     @Inject
     public ArticleExecutionContext(ActorSystem actorSystem) {
-        super(actorSystem, "post.article");
+        super(actorSystem, "article.repository");
     }
 }

@@ -17,6 +17,9 @@ public class ArticleResource {
     private String source;
     private String redirectTarget;
 
+    public ArticleResource() {
+    }
+
     public ArticleResource(int id, String link, String key, String title, LocalDateTime latest, String contentModel, String source, String redirectTarget) {
         this.link = link;
         this.key = key;
@@ -25,6 +28,7 @@ public class ArticleResource {
         this.contentModel = contentModel;
         this.source = source;
         this.redirectTarget = redirectTarget;
+        System.out.println(this);
     }
 
     public ArticleResource(Article article, String link) {
@@ -36,6 +40,7 @@ public class ArticleResource {
         this.contentModel = article.getContentModel();
         this.source = article.getSource();
         this.redirectTarget = article.getRedirectTarget();
+        System.out.println(this);
     }
 
     public int getId() {

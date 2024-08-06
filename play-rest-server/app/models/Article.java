@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "articles")
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Article {
 
     @Id
@@ -23,6 +23,8 @@ public class Article {
     private String source;
     private String redirectTarget;
 
+    public Article() {}
+
     public Article( String key, String title, LocalDateTime latest, String contentModel, String source, String redirectTarget) {
         this.key = key;
         this.title = title;
@@ -30,6 +32,7 @@ public class Article {
         this.contentModel = contentModel;
         this.source = source;
         this.redirectTarget = redirectTarget;
+        System.out.println(this);
     }
 
     public int getId() {
