@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -21,7 +22,11 @@ public class ArticleDAO implements ArticleRepository{
 
     private final JPAApi jpaApi;
     private final ArticleExecutionContext ec;
-    private final CircuitBreaker<Optional<Article>> circuitBreaker = new CircuitBreaker<Optional<Article>>().withFailureThreshold(1).withSuccessThreshold(3);
+    private final CircuitBreaker<Optional<Article>> circuitBreaker =
+            new CircuitBreaker<Optional<Article>>()
+                    .withFailureThreshold(5)
+                    .withSuccessThreshold(3)
+                    .withDelay(Duration.ofSeconds(10));
 
     @Inject
     public ArticleDAO(JPAApi jpaApi, ArticleExecutionContext ec) {
@@ -35,6 +40,9 @@ public class ArticleDAO implements ArticleRepository{
     }
 
     public CompletionStage<Article> create(Article article) {
+        if (article.getContent_model() == null) {
+            throw new IllegalArgumentException("Content model must not be null");
+        }
         return supplyAsync(() -> wrap(em -> insert(em, article)), ec);
     }
 
@@ -47,11 +55,11 @@ public class ArticleDAO implements ArticleRepository{
     }
 
     public CompletionStage<Optional<Article>> update(int id, Article article) {
-        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> lookup(em, id))),ec);
+        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> modify(em, id, article))),ec);
     }
 
     public CompletionStage<Optional<Article>> updateByTitle(String title, Article article) {
-        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> lookupByTitle(em, title))), ec);
+        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> modify(em, title, article))), ec);
     }
 
     private <T> T wrap(Function<EntityManager, T> function) {
@@ -85,8 +93,8 @@ public class ArticleDAO implements ArticleRepository{
         if (data != null) {
             data.setKey(article.getKey());
             data.setTitle(article.getTitle());
-            data.setLatest(article.getLatest());
-            data.setContentModel(article.getContentModel());
+            data.setLatest_version_timestamp(article.getLatest_version_timestamp());
+            data.setContent_model(article.getContent_model());
             data.setSource(article.getSource());
             data.setRedirectTarget(article.getRedirectTarget());
         }
@@ -98,8 +106,8 @@ public class ArticleDAO implements ArticleRepository{
         Optional<Article> data = lookupByTitle(em, title);
         if (data.isPresent()) {
             data.get().setKey(article.getKey());
-            data.get().setLatest(article.getLatest());
-            data.get().setContentModel(article.getContentModel());
+            data.get().setLatest_version_timestamp(article.getLatest_version_timestamp());
+            data.get().setContent_model(article.getContent_model());
             data.get().setSource(article.getSource());
             data.get().setRedirectTarget(article.getRedirectTarget());
         }
@@ -108,6 +116,7 @@ public class ArticleDAO implements ArticleRepository{
     }
 
     private Article insert(EntityManager em, Article article) {
+        System.out.println("Inserting article: " + article);
         return em.merge(article);
     }
 }

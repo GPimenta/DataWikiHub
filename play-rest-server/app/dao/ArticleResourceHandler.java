@@ -3,7 +3,6 @@ package dao;
 import com.palominolabs.http.url.UrlBuilder;
 import models.Article;
 import models.ArticleResource;
-import org.checkerframework.checker.units.qual.A;
 import play.libs.concurrent.ClassLoaderExecutionContext;
 import play.mvc.Http;
 
@@ -32,7 +31,7 @@ public class ArticleResourceHandler {
     }
 
     public CompletionStage<ArticleResource> create(Http.Request request, ArticleResource articleResource) {
-        final Article article = new Article(articleResource.getKey(), articleResource.getTitle(), articleResource.getLatest(), articleResource.getContentModel(), articleResource.getSource(), articleResource.getRedirectTarget());
+        final Article article = new Article(articleResource.getKey(), articleResource.getTitle(), articleResource.getLatest_version_timestamp(), articleResource.getContent_model(), articleResource.getSource(), articleResource.getRedirectTarget());
         return articleDAO.create(article).thenApplyAsync(savedArticle -> {
             return new ArticleResource(savedArticle, link(request, savedArticle));
         }, ec.current());
@@ -51,14 +50,14 @@ public class ArticleResourceHandler {
     }
 
     public CompletionStage<Optional<ArticleResource>> update(Http.Request request, int id, ArticleResource articleResource) {
-        final Article articleData = new Article(articleResource.getKey(), articleResource.getTitle(), articleResource.getLatest(), articleResource.getContentModel(), articleResource.getSource(), articleResource.getRedirectTarget());
+        final Article articleData = new Article(articleResource.getKey(), articleResource.getTitle(), articleResource.getLatest_version_timestamp(), articleResource.getContent_model(), articleResource.getSource(), articleResource.getRedirectTarget());
         return articleDAO.update(id, articleData).thenApplyAsync(optionalArticle -> {
             return optionalArticle.map(article -> new ArticleResource(article, link(request, article)));
         }, ec.current());
     }
 
     public CompletionStage<Optional<ArticleResource>> updateByTitle(Http.Request request, String title, ArticleResource articleResource) {
-        final Article articleData = new Article(articleResource.getKey(), articleResource.getTitle(), articleResource.getLatest(), articleResource.getContentModel(), articleResource.getSource(), articleResource.getRedirectTarget());
+        final Article articleData = new Article(articleResource.getKey(), articleResource.getTitle(), articleResource.getLatest_version_timestamp(), articleResource.getContent_model(), articleResource.getSource(), articleResource.getRedirectTarget());
         return articleDAO.updateByTitle(title, articleData).thenApplyAsync(optionalArticle -> {
             return optionalArticle.map(article -> new ArticleResource(article, link(request, article)));
         }, ec.current());

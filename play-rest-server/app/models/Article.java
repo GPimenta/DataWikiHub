@@ -1,7 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -15,12 +15,19 @@ public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "key")
     private String key;
+    @Column(name = "title")
     private String title;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime latest;
-    private String contentModel;
+    @Column(name = "latest_version_timestamp")
+    private LocalDateTime latest_version_timestamp;
+    @JsonProperty("content_model")
+    @Column(name = "content_model", nullable = false)
+    private String content_model;
+    @Column(name = "source")
     private String source;
+    @Column(name = "redirect_target")
     private String redirectTarget;
 
     public Article() {}
@@ -28,8 +35,8 @@ public class Article {
     public Article( String key, String title, LocalDateTime latest, String contentModel, String source, String redirectTarget) {
         this.key = key;
         this.title = title;
-        this.latest = latest;
-        this.contentModel = contentModel;
+        this.latest_version_timestamp = latest;
+        this.content_model = contentModel;
         this.source = source;
         this.redirectTarget = redirectTarget;
         System.out.println(this);
@@ -59,20 +66,20 @@ public class Article {
         this.title = title;
     }
 
-    public LocalDateTime getLatest() {
-        return latest;
+    public LocalDateTime getLatest_version_timestamp() {
+        return latest_version_timestamp;
     }
 
-    public void setLatest(LocalDateTime latest) {
-        this.latest = latest;
+    public void setLatest_version_timestamp(LocalDateTime latest_version_timestamp) {
+        this.latest_version_timestamp = latest_version_timestamp;
     }
 
-    public String getContentModel() {
-        return contentModel;
+    public String getContent_model() {
+        return content_model;
     }
 
-    public void setContentModel(String contentModel) {
-        this.contentModel = contentModel;
+    public void setContent_model(String content_model) {
+        this.content_model = content_model;
     }
 
     public String getSource() {
@@ -96,12 +103,12 @@ public class Article {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Article article = (Article) o;
-        return id == article.id && Objects.equals(key, article.key) && Objects.equals(title, article.title) && Objects.equals(latest, article.latest) && Objects.equals(contentModel, article.contentModel) && Objects.equals(source, article.source) && Objects.equals(redirectTarget, article.redirectTarget);
+        return id == article.id && Objects.equals(key, article.key) && Objects.equals(title, article.title) && Objects.equals(latest_version_timestamp, article.latest_version_timestamp) && Objects.equals(content_model, article.content_model) && Objects.equals(source, article.source) && Objects.equals(redirectTarget, article.redirectTarget);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, title, latest, contentModel, source, redirectTarget);
+        return Objects.hash(id, key, title, latest_version_timestamp, content_model, source, redirectTarget);
     }
 
     @Override
@@ -110,8 +117,8 @@ public class Article {
                 "id=" + id +
                 ", key='" + key + '\'' +
                 ", title='" + title + '\'' +
-                ", latest=" + latest +
-                ", contentModel='" + contentModel + '\'' +
+                ", latest=" + latest_version_timestamp +
+                ", contentModel='" + content_model + '\'' +
                 ", source='" + source + '\'' +
                 ", redirectTarget='" + redirectTarget + '\'' +
                 '}';

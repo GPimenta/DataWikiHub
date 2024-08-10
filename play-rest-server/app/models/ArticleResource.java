@@ -1,6 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -9,12 +10,18 @@ public class ArticleResource {
 
     private int id;
     private String link;
+    @Column(name = "key")
     private String key;
+    @Column(name = "title")
     private String title;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime latest;
-    private String contentModel;
+    @Column(name = "latest_version_timestamp")
+    private LocalDateTime latest_version_timestamp;
+    @Column(name = "content_model", nullable = false)
+    private String content_model;
+    @Column(name = "source")
     private String source;
+    @Column(name = "redirect_target")
     private String redirectTarget;
 
     public ArticleResource() {
@@ -24,8 +31,8 @@ public class ArticleResource {
         this.link = link;
         this.key = key;
         this.title = title;
-        this.latest = latest;
-        this.contentModel = contentModel;
+        this.latest_version_timestamp = latest;
+        this.content_model = contentModel;
         this.source = source;
         this.redirectTarget = redirectTarget;
         System.out.println(this);
@@ -36,8 +43,8 @@ public class ArticleResource {
         this.link = link;
         this.key = article.getKey();
         this.title = article.getTitle();
-        this.latest = article.getLatest();
-        this.contentModel = article.getContentModel();
+        this.latest_version_timestamp = article.getLatest_version_timestamp();
+        this.content_model = article.getContent_model();
         this.source = article.getSource();
         this.redirectTarget = article.getRedirectTarget();
         System.out.println(this);
@@ -75,20 +82,20 @@ public class ArticleResource {
         this.title = title;
     }
 
-    public LocalDateTime getLatest() {
-        return latest;
+    public LocalDateTime getLatest_version_timestamp() {
+        return latest_version_timestamp;
     }
 
-    public void setLatest(LocalDateTime latest) {
-        this.latest = latest;
+    public void setLatest_version_timestamp(LocalDateTime latest_version_timestamp) {
+        this.latest_version_timestamp = latest_version_timestamp;
     }
 
-    public String getContentModel() {
-        return contentModel;
+    public String getContent_model() {
+        return content_model;
     }
 
-    public void setContentModel(String contentModel) {
-        this.contentModel = contentModel;
+    public void setContent_model(String content_model) {
+        this.content_model = content_model;
     }
 
     public String getSource() {
@@ -112,12 +119,12 @@ public class ArticleResource {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ArticleResource that = (ArticleResource) o;
-        return id == that.id && Objects.equals(link, that.link) && Objects.equals(key, that.key) && Objects.equals(title, that.title) && Objects.equals(latest, that.latest) && Objects.equals(contentModel, that.contentModel) && Objects.equals(source, that.source) && Objects.equals(redirectTarget, that.redirectTarget);
+        return id == that.id && Objects.equals(link, that.link) && Objects.equals(key, that.key) && Objects.equals(title, that.title) && Objects.equals(latest_version_timestamp, that.latest_version_timestamp) && Objects.equals(content_model, that.content_model) && Objects.equals(source, that.source) && Objects.equals(redirectTarget, that.redirectTarget);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, link, key, title, latest, contentModel, source, redirectTarget);
+        return Objects.hash(id, link, key, title, latest_version_timestamp, content_model, source, redirectTarget);
     }
 
     @Override
@@ -127,8 +134,8 @@ public class ArticleResource {
                 ", link='" + link + '\'' +
                 ", key='" + key + '\'' +
                 ", title='" + title + '\'' +
-                ", latest=" + latest +
-                ", contentModel='" + contentModel + '\'' +
+                ", latest=" + latest_version_timestamp +
+                ", contentModel='" + content_model + '\'' +
                 ", source='" + source + '\'' +
                 ", redirectTarget='" + redirectTarget + '\'' +
                 '}';
