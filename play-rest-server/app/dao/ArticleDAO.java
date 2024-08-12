@@ -51,15 +51,19 @@ public class ArticleDAO implements ArticleRepository{
     }
 
     public CompletionStage<Optional<Article>> getByTitle(String title) {
-        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> lookupByTitle(em,title))),ec);
+        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> lookupByTitle(em,title))), ec);
     }
 
     public CompletionStage<Optional<Article>> update(int id, Article article) {
-        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> modify(em, id, article))),ec);
+        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> modify(em, id, article))), ec);
     }
 
     public CompletionStage<Optional<Article>> updateByTitle(String title, Article article) {
         return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> modify(em, title, article))), ec);
+    }
+
+    public CompletionStage<Boolean> remove(int id) {
+        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> delete(em, id))), ec);
     }
 
     private <T> T wrap(Function<EntityManager, T> function) {
@@ -113,6 +117,24 @@ public class ArticleDAO implements ArticleRepository{
         }
 //        Thread.sleep(10000L);
         return data;
+    }
+
+    private Boolean delete(EntityManager em, int id) throws SQLException {
+        Optional<Article> data = lookup(em, id);
+        if (data.isPresent()) {
+            em.remove(data);
+            return true;
+        }
+        return false;
+    }
+
+    private Boolean deleteByTitle(EntityManager em, String title) throws SQLException {
+        Optional<Article> data = lookupByTitle(em, title);
+        if (data.isPresent()) {
+            em.remove(data);
+            return true;
+        }
+        return false;
     }
 
     private Article insert(EntityManager em, Article article) {
