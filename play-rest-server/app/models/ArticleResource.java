@@ -1,6 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 
 import java.time.LocalDateTime;
@@ -21,13 +22,13 @@ public class ArticleResource {
     private String content_model;
     @Column(name = "source")
     private String source;
+    @JsonProperty("redirect_target")
     @Column(name = "redirect_target")
     private String redirectTarget;
 
-    public ArticleResource() {
-    }
+    public ArticleResource() {}
 
-    public ArticleResource(int id, String link, String key, String title, LocalDateTime latest, String contentModel, String source, String redirectTarget) {
+    public ArticleResource(String link, String key, String title, LocalDateTime latest, String contentModel, String source, String redirectTarget) {
         this.link = link;
         this.key = key;
         this.title = title;

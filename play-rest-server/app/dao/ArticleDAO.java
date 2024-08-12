@@ -98,7 +98,7 @@ public class ArticleDAO implements ArticleRepository{
             data.setSource(article.getSource());
             data.setRedirectTarget(article.getRedirectTarget());
         }
-        Thread.sleep(10000L);
+//        Thread.sleep(10000L);
         return Optional.ofNullable(data);
     }
 
@@ -111,7 +111,7 @@ public class ArticleDAO implements ArticleRepository{
             data.get().setSource(article.getSource());
             data.get().setRedirectTarget(article.getRedirectTarget());
         }
-        Thread.sleep(10000L);
+//        Thread.sleep(10000L);
         return data;
     }
 

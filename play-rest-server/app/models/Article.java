@@ -27,6 +27,7 @@ public class Article {
     private String content_model;
     @Column(name = "source")
     private String source;
+    @JsonProperty("redirect_target")
     @Column(name = "redirect_target")
     private String redirectTarget;
 
