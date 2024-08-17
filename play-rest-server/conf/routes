@@ -12,10 +12,10 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 # JSON endpoints for articles
 GET    /articles                   controllers.HomeController.list(request:Request)
-GET    /articles/:id               controllers.HomeController.show(request:Request, id: Int)
-GET    /articles/title/:title      controllers.HomeController.showByTitle(request:Request, title: String)
-PUT    /articles/:id               controllers.HomeController.update(request:Request, id: Int)
-PUT    /articles/title/:title      controllers.HomeController.updateByTitle(request:Request, title: String)
-POST   /articles                   controllers.HomeController.create(request:Request)
-DELETE /articles/:id               controllers.HomeController.remove(request:Request, id: Int)
-DELETE /articles/title/:title      controllers.HomeController.removeByTitle(request:Request, title: String)
+GET    /article/:id               controllers.HomeController.show(request:Request, id: Int)
+GET    /article/title/:title      controllers.HomeController.showByTitle(request:Request, title: String)
+PUT    /article/:id               controllers.HomeController.update(request:Request, id: Int)
+PUT    /article/title/:title      controllers.HomeController.updateByTitle(request:Request, title: String)
+POST   /article                   controllers.HomeController.create(request:Request)
+DELETE /article/:id               controllers.HomeController.remove(request:Request, id: Int)
+DELETE /article/title/:title      controllers.HomeController.removeByTitle(request:Request, title: String)

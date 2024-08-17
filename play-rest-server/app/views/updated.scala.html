@@ -1,0 +1,7 @@
+@(article: ArticleResource)
+
+@main("Article Details") {
+<h1>Article with title @article.getTitle() updated</h1>
+<p>@article.getContent_model</p>
+<a href="@routes.HomeController.list()">Back to list</a>
+}

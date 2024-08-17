@@ -34,60 +34,50 @@ public class HomeController extends Controller {
     public CompletionStage<Result> list(Http.Request request) {
         return handler.find(request).thenApplyAsync(articles -> {
             final List<ArticleResource> articleList = articles.collect(Collectors.toList());
-            return ok(Json.toJson(articleList));
+            return ok(views.html.articles.render(articleList));
         }, ec.current());
     }
 
     public CompletionStage<Result> show(Http.Request request, int id) {
-        return handler.lookup(request, id).thenApplyAsync(optionalArticle -> {
-            return optionalArticle.map(articleResource -> ok(Json.toJson(articleResource))).orElseGet(Results::notFound);
-        }, ec.current());
+        return handler.lookup(request, id).thenApplyAsync(optionalArticle ->
+                optionalArticle.map(articleResource -> ok(views.html.article.render(articleResource))).orElseGet(Results::notFound), ec.current());
     }
 
     public CompletionStage<Result> showByTitle(Http.Request request, String title) {
-        return handler.lookupByTitle(request, title).thenApplyAsync(optionalArticle -> {
-            return optionalArticle.map(articleResource -> ok(Json.toJson(articleResource))).orElseGet(Results::notFound);
-        }, ec.current());
+        return handler.lookupByTitle(request, title).thenApplyAsync(optionalArticle ->
+                optionalArticle.map(articleResource -> ok(views.html.article.render(articleResource))).orElseGet(Results::notFound), ec.current());
     }
 
     public CompletionStage<Result> update(Http.Request request, int id) {
         JsonNode json = request.body().asJson();
         ArticleResource articleResource = Json.fromJson(json, ArticleResource.class);
-        return handler.update(request, id, articleResource).thenApplyAsync(optionalArticleResource -> {
-            return optionalArticleResource.map(articleResourceJson -> ok(Json.toJson(articleResourceJson))).orElseGet(Results::notFound);
-        }, ec.current());
+        return handler.update(request, id, articleResource).thenApplyAsync(optionalArticleResource ->
+                optionalArticleResource.map(articleResourceJson -> ok(views.html.updated.render(articleResourceJson))).orElseGet(Results::notFound), ec.current());
     }
 
     public CompletionStage<Result> updateByTitle(Http.Request request, String title) {
         JsonNode json = request.body().asJson();
         ArticleResource articleResource = Json.fromJson(json, ArticleResource.class);
-        return handler.updateByTitle(request, title, articleResource).thenApplyAsync(optionalArticleResource -> {
-            return optionalArticleResource.map(articleResourceJson -> ok(Json.toJson(articleResourceJson))).orElseGet(Results::notFound);
-        }, ec.current());
+        return handler.updateByTitle(request, title, articleResource).thenApplyAsync(optionalArticleResource ->
+                optionalArticleResource.map(articleResourceJson -> ok(views.html.updated.render(articleResourceJson))).orElseGet(Results::notFound), ec.current());
     }
 
     public CompletionStage<Result> create(Http.Request request) {
         JsonNode json = request.body().asJson();
         final ArticleResource articleResource = Json.fromJson(json, ArticleResource.class);
-        return handler.create(request, articleResource).thenApplyAsync(savedArticleResource -> {
-            return created(Json.toJson(savedArticleResource));
-        }, ec.current());
+        return handler.create(request, articleResource).thenApplyAsync(savedArticleResource ->
+                created(views.html.create.render(savedArticleResource)), ec.current());
     }
 
     public CompletionStage<Result> remove(Http.Request request, int id) {
-        JsonNode json = request.body().asJson();
-        final ArticleResource  articleResource = Json.fromJson(json, ArticleResource.class);
-        return handler.remove(request, id).thenApplyAsync(deletedArticleResource -> {
-            return deletedArticleResource.map(articleResourceDeleted -> ok(Json.toJson(articleResourceDeleted))).orElseGet(Results::notFound);
-        }, ec.current());
+//        JsonNode json = request.body().asJson();
+        return handler.remove(request, id).thenApplyAsync(deletedArticleResource ->
+                deletedArticleResource.map(articleResourceDeleted -> ok(views.html.delete.render(articleResourceDeleted))).orElseGet(Results::notFound), ec.current());
     }
 
     public CompletionStage<Result> removeByTitle(Http.Request request, String title) {
-        JsonNode json = request.body().asJson();
-        final ArticleResource  articleResource = Json.fromJson(json, ArticleResource.class);
-        return handler.removeByTitle(request, title).thenApplyAsync(deletedArticleResource -> {
-            return deletedArticleResource.map(articleResourceDeleted -> ok(Json.toJson(articleResourceDeleted))).orElseGet(Results::notFound);
-        }, ec.current());
+        return handler.removeByTitle(request, title).thenApplyAsync(deletedArticleResource ->
+                deletedArticleResource.map(articleResourceDeleted -> ok(views.html.delete.render(articleResourceDeleted))).orElseGet(Results::notFound), ec.current());
     }
 
 
