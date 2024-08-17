@@ -1,15 +1,13 @@
-package org.stream_message.controller;
+package org.stream_message.consumer;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
-import org.stream_message.model.PageSource;
+import org.stream_message.connector.PostgresSQLJDBC;
+import org.stream_message.controller.ArticlesController;
+import org.stream_message.repository.ArticlesDAO;
 import org.stream_message.util.PropertiesConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 public class ConsumerTest {
@@ -19,17 +17,25 @@ public class ConsumerTest {
     private static String valueDeserializerClassName = StringDeserializer.class.getName();
     private static String groupId = "Banana7";
     private static String offSetReset = "earliest";
+    private String host = "localhost";
+    private String port = "5432";
+    private String database = "WIKI_ARTICLES";
+    private PostgresSQLJDBC postgresSQLJDBC = new PostgresSQLJDBC(host, port, database);
+    private ArticlesDAO articlesDAO = new ArticlesDAO(postgresSQLJDBC);
+    private ArticlesController articlesController = new ArticlesController(articlesDAO);
+    private ArticleMessageProcessor messageProcessor = new ArticleMessageProcessor(articlesController);
 
-    @Test
-    public void consumerSimpleTopicTest() {
 
-        String topic = "topicTest";
-        Properties properties = PropertiesConfiguration.simpleConsumerProperty(bootStrapServer, keyDeserializerClassName, valueDeserializerClassName, groupId, offSetReset);
-        List<String> topicsList = List.of(topic);
 
-        Consumer consumer = new Consumer(properties, topicsList);
-        consumer.consumerSimpleTopic(String.class);
-    }
+//    @Test
+//    public void consumerSimpleTopicTest() {
+//        String topic = "topicTest";
+//        Properties properties = PropertiesConfiguration.simpleConsumerProperty(bootStrapServer, keyDeserializerClassName, valueDeserializerClassName, groupId, offSetReset);
+//        List<String> topicsList = List.of(topic);
+//
+//        Consumer consumer = new Consumer(properties, topicsList, articlesController);
+//        consumer.consumerSimpleTopic(String.class);
+//    }
 
     @Test
     public void consumerSimpleTopicWithArticleTest() {
@@ -37,9 +43,8 @@ public class ConsumerTest {
         Properties properties = PropertiesConfiguration.simpleConsumerProperty(bootStrapServer, keyDeserializerClassName, valueDeserializerClassName, groupId, offSetReset);
         List<String> topicList = List.of(topic);
 
-        Consumer consumer = new Consumer(properties, topicList);
-        consumer.consumerSimpleTopic(PageSource.class);
-
+        Consumer consumer = new Consumer(properties, topicList, messageProcessor);
+        consumer.consumeArticle();
     }
 
 

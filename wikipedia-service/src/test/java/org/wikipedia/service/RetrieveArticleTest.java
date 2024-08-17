@@ -62,6 +62,14 @@ public class RetrieveArticleTest {
         System.out.println(pageSourceWithRandomWord);
     }
 
+    @Test
+    public void producerArticleTest1() {
+        String word = GetRandomWord.randomWord();
+        System.out.println(word);
+        PageSource pageSource = retrieveArticleWikipedia.getPageSourceWithRandomWord("/" + word);
+        retrieveArticleWikipedia.producerArticle(pageSource.getKey(), gson.toJson(pageSource));
+    }
+
 //    @Test
 //    public void articlesToProducerTest() throws IOException {
 //        retrieveArticle.articlesToProducer(articleList);
