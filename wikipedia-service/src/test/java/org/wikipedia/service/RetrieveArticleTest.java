@@ -58,7 +58,7 @@ public class RetrieveArticleTest {
     public void getPageSourceWithRandomWordTest() {
         String word = GetRandomWord.randomWord();
         System.out.println(word);
-        PageSource pageSourceWithRandomWord = retrieveArticleWikipedia.getPageSourceWithRandomWord(word);
+        PageSource pageSourceWithRandomWord = retrieveArticleWikipedia.getPageSourceWithRandomWord("/" + word);
         System.out.println(pageSourceWithRandomWord);
     }
 
