@@ -17,7 +17,7 @@ public class Article {
     private int id;
     @Column(name = "key")
     private String key;
-    @Column(name = "title")
+    @Column(name = "title", unique = true)
     private String title;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "latest_version_timestamp")

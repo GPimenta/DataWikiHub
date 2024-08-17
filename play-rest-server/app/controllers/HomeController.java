@@ -69,8 +69,24 @@ public class HomeController extends Controller {
     public CompletionStage<Result> create(Http.Request request) {
         JsonNode json = request.body().asJson();
         final ArticleResource articleResource = Json.fromJson(json, ArticleResource.class);
-        return handler.create(request,articleResource).thenApplyAsync(savedArticleResource -> {
+        return handler.create(request, articleResource).thenApplyAsync(savedArticleResource -> {
             return created(Json.toJson(savedArticleResource));
+        }, ec.current());
+    }
+
+    public CompletionStage<Result> remove(Http.Request request, int id) {
+        JsonNode json = request.body().asJson();
+        final ArticleResource  articleResource = Json.fromJson(json, ArticleResource.class);
+        return handler.remove(request, id).thenApplyAsync(deletedArticleResource -> {
+            return deletedArticleResource.map(articleResourceDeleted -> ok(Json.toJson(articleResourceDeleted))).orElseGet(Results::notFound);
+        }, ec.current());
+    }
+
+    public CompletionStage<Result> removeByTitle(Http.Request request, String title) {
+        JsonNode json = request.body().asJson();
+        final ArticleResource  articleResource = Json.fromJson(json, ArticleResource.class);
+        return handler.removeByTitle(request, title).thenApplyAsync(deletedArticleResource -> {
+            return deletedArticleResource.map(articleResourceDeleted -> ok(Json.toJson(articleResourceDeleted))).orElseGet(Results::notFound);
         }, ec.current());
     }
 

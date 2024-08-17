@@ -4,6 +4,7 @@ import jakarta.persistence.NoResultException;
 import models.Article;
 import net.jodah.failsafe.CircuitBreaker;
 import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.RetryPolicy;
 import play.db.jpa.JPAApi;
 
 import javax.inject.Inject;
@@ -27,6 +28,11 @@ public class ArticleDAO implements ArticleRepository{
                     .withFailureThreshold(5)
                     .withSuccessThreshold(3)
                     .withDelay(Duration.ofSeconds(10));
+
+    private final RetryPolicy<Optional<Article>> retryPolicy = new RetryPolicy<Optional<Article>>()
+            .handle(SQLException.class)
+            .withMaxRetries(3)
+            .withDelay(Duration.ofSeconds(2));
 
     @Inject
     public ArticleDAO(JPAApi jpaApi, ArticleExecutionContext ec) {
@@ -62,8 +68,12 @@ public class ArticleDAO implements ArticleRepository{
         return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> modify(em, title, article))), ec);
     }
 
-    public CompletionStage<Boolean> remove(int id) {
-        return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> delete(em, id))), ec);
+    public CompletionStage<Optional<Article>> remove(int id) {
+        return supplyAsync(() -> wrap(em -> Failsafe.with(retryPolicy, circuitBreaker).get(() -> delete(em, id))), ec);
+    }
+
+    public CompletionStage<Optional<Article>> removeByTitle(String title) {
+        return supplyAsync(() -> wrap(em -> Failsafe.with(retryPolicy, circuitBreaker).get(() -> deleteByTitle(em, title))), ec);
     }
 
     private <T> T wrap(Function<EntityManager, T> function) {
@@ -119,22 +129,16 @@ public class ArticleDAO implements ArticleRepository{
         return data;
     }
 
-    private Boolean delete(EntityManager em, int id) throws SQLException {
+    private Optional<Article> delete(EntityManager em, int id) throws SQLException {
         Optional<Article> data = lookup(em, id);
-        if (data.isPresent()) {
-            em.remove(data);
-            return true;
-        }
-        return false;
+        data.ifPresent(em::remove);
+        return data;
     }
 
-    private Boolean deleteByTitle(EntityManager em, String title) throws SQLException {
+    private Optional<Article> deleteByTitle(EntityManager em, String title) throws SQLException {
         Optional<Article> data = lookupByTitle(em, title);
-        if (data.isPresent()) {
-            em.remove(data);
-            return true;
-        }
-        return false;
+        data.ifPresent(em::remove);
+        return data;
     }
 
     private Article insert(EntityManager em, Article article) {

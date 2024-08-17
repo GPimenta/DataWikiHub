@@ -63,8 +63,17 @@ public class ArticleResourceHandler {
         }, ec.current());
     }
 
+    public CompletionStage<Optional<ArticleResource>> remove(Http.Request request, int id) {
+        return articleDAO.remove(id).thenApplyAsync(optionalArticle -> {
+            return optionalArticle.map(article -> new ArticleResource(article, link(request, article)));
+        });
+    }
 
-
+    public CompletionStage<Optional<ArticleResource>> removeByTitle(Http.Request request, String title) {
+        return articleDAO.removeByTitle(title).thenApplyAsync(optionalArticle -> {
+            return optionalArticle.map(article -> new ArticleResource(article, link(request, article)));
+        });
+    }
 
     private String link(Http.Request request, Article article) {
         final String[] hostPort = request.host().split(":");
