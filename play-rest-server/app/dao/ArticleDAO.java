@@ -86,7 +86,6 @@ public class ArticleDAO implements ArticleRepository{
     }
 
     private Optional<Article> lookup(EntityManager em, int id) throws SQLException {
-//        throw new SQLException("Call this to cause the circuit breaker to trip");
         return Optional.ofNullable(em.find(Article.class, id));
     }
 
