@@ -1,4 +1,4 @@
-package org.stream_message.controller;
+package org.stream_message.consumer;
 
 import com.google.gson.Gson;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -19,10 +19,12 @@ public class Consumer {
 
     private final Properties properties;
     private final List<String> topics;
+    private final ArticleMessageProcessor messageProcessor;
 
-    public Consumer(Properties properties, List<String> topics) {
+    public Consumer(Properties properties, List<String> topics, ArticleMessageProcessor messageProcessor) {
         this.properties = properties;
         this.topics = topics;
+        this.messageProcessor = messageProcessor;
     }
 
     public <T> void consumerSimpleTopic(Class<T> clazz) {
@@ -39,6 +41,25 @@ public class Consumer {
                 for (ConsumerRecord<String, String> record : records) {
                     System.out.println(record.key() + " " + record.value());
                     map.put(record.key(), gson.fromJson(record.value(), clazz));
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected error {0}", e);
+        }
+    }
+
+    public void consumeArticle() {
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+        consumer.subscribe(topics);
+
+        try {
+            while (true) {
+                logger.info("Polling article messages");
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+
+                for (ConsumerRecord<String, String> record : records) {
+                    System.out.println(record.key() + " " + record.value());
+                    messageProcessor.processRecord(record);
                 }
             }
         } catch (Exception e) {

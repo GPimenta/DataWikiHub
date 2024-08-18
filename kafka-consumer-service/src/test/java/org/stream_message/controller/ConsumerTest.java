@@ -1,15 +1,12 @@
 package org.stream_message.controller;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
+import org.stream_message.consumer.Consumer;
 import org.stream_message.model.PageSource;
 import org.stream_message.util.PropertiesConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 public class ConsumerTest {
