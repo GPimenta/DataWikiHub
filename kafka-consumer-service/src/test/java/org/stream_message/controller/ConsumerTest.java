@@ -2,8 +2,11 @@ package org.stream_message.controller;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
+import org.stream_message.connector.PostgresSQLJDBC;
+import org.stream_message.consumer.ArticleMessageProcessor;
 import org.stream_message.consumer.Consumer;
 import org.stream_message.model.PageSource;
+import org.stream_message.repository.ArticlesDAO;
 import org.stream_message.util.PropertiesConfiguration;
 
 import java.util.List;
@@ -16,6 +19,15 @@ public class ConsumerTest {
     private static String valueDeserializerClassName = StringDeserializer.class.getName();
     private static String groupId = "Banana7";
     private static String offSetReset = "earliest";
+
+
+    private final String host = "localhost";
+    private final String port = "5432";
+    private final String database = "WIKI_ARTICLES";
+    private final PostgresSQLJDBC postgresSQLJDBC = new PostgresSQLJDBC(host, port, database);
+    private final ArticlesDAO articlesDAO = new ArticlesDAO(postgresSQLJDBC);
+    private final ArticlesController articlesController = new ArticlesController(articlesDAO);
+    private final ArticleMessageProcessor messageProcessor = new ArticleMessageProcessor(articlesController);
 
     @Test
     public void consumerSimpleTopicTest() {
@@ -34,7 +46,7 @@ public class ConsumerTest {
         Properties properties = PropertiesConfiguration.simpleConsumerProperty(bootStrapServer, keyDeserializerClassName, valueDeserializerClassName, groupId, offSetReset);
         List<String> topicList = List.of(topic);
 
-        Consumer consumer = new Consumer(properties, topicList);
+        Consumer consumer = new Consumer(properties, topicList, messageProcessor);
         consumer.consumerSimpleTopic(PageSource.class);
 
     }

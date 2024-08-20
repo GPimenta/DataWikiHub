@@ -19,7 +19,12 @@ public class Consumer {
 
     private final Properties properties;
     private final List<String> topics;
-    private final ArticleMessageProcessor messageProcessor;
+    private ArticleMessageProcessor messageProcessor;
+
+    public Consumer(Properties properties, List<String> topics) {
+        this.properties = properties;
+        this.topics = topics;
+    }
 
     public Consumer(Properties properties, List<String> topics, ArticleMessageProcessor messageProcessor) {
         this.properties = properties;

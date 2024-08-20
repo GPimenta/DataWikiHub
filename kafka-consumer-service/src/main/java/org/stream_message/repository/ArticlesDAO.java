@@ -22,7 +22,7 @@ public class ArticlesDAO {
     private final String QUERY_id = "SELECT id, key, title, content_model, source, latest_version_timestamp, redirect_target FROM ARTICLES WHERE id = ?;";
     private final String QUERY_key = "SELECT id, key, title, content_model, source, latest_version_timestamp, redirect_target FROM ARTICLES WHERE key = ?;";
     private final String INSERT_ARTICLE = "INSERT INTO ARTICLES (key, title, content_model, source, latest_version_timestamp, redirect_target) VALUES (?, ?, ?, ?, ?, ?);";
-    private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET title = ?, content_model = ?, source = ?, latest_version_timestamp = ? content_model, source, latest_version_timestamp, redirect_target WHERE key = ? ;";
+    private final String UPDATE_ARTICLE = "UPDATE ARTICLES SET title = ?, content_model = ?, source = ?, latest_version_timestamp = ?, redirect_target = ? WHERE key = ? ;";
     private final String DELETE_ARTICLE = "DELETE FROM ARTICLES WHERE key = ?;";
 
     public ArticlesDAO(PostgresSQLJDBC postgresSQLJDBC) {
@@ -141,6 +141,8 @@ public class ArticlesDAO {
                 preparedStatement.setString(2, pageSourcePostgres.getTitle());
                 preparedStatement.setString(3, pageSourcePostgres.getContentModel());
                 preparedStatement.setString(4, pageSourcePostgres.getSource());
+                System.out.println(pageSourcePostgres.getLatest());
+                System.out.println(Timestamp.valueOf(pageSourcePostgres.getLatest()));
                 preparedStatement.setTimestamp(5, Timestamp.valueOf(pageSourcePostgres.getLatest()));
                 preparedStatement.setString(6, pageSourcePostgres.getRedirectTarget());
 
