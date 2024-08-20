@@ -1,4 +1,4 @@
-package org.stream_message.model;
+package org.wikipedia.model;
 
 import com.google.gson.annotations.SerializedName;
 import org.wikipedia.model.Latest;
