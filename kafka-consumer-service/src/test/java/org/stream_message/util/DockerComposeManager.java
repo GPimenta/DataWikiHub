@@ -16,7 +16,8 @@ public class DockerComposeManager {
 
 
     public void startContainer() {
-        container = new DockerComposeContainer<>(new File("docker-compose.yaml"))
+        container = new DockerComposeContainer<>(new File("src/test/docker-compose_test.yaml"))
+                .withLogConsumer("postgres", new Slf4jLogConsumer(logger))
                 .withLogConsumer("broker", new Slf4jLogConsumer(logger))
                 .withLogConsumer("schema-registry", new Slf4jLogConsumer(logger))
                 .withLogConsumer("connect", new Slf4jLogConsumer(logger))
@@ -24,6 +25,7 @@ public class DockerComposeManager {
                 .withLogConsumer("ksqldb-server", new Slf4jLogConsumer(logger))
                 .withLogConsumer("ksql-datagen", new Slf4jLogConsumer(logger))
                 .withLogConsumer("rest-proxy", new Slf4jLogConsumer(logger))
+                .withExposedService("postgres", 5432)
                 .withExposedService("broker", 9092)
                 .withExposedService("schema-registry", 8081)
                 .withExposedService("connect", 8083)
@@ -31,6 +33,9 @@ public class DockerComposeManager {
                 .withExposedService("ksqldb-server", 8088)
                 .withExposedService("rest-proxy", 8082)
                 .withExposedService("mockserver", 1080)
+                .waitingFor("postgres", new WaitAllStrategy()
+                        .withStrategy(Wait.forListeningPort())
+                        .withStrategy(Wait.forLogMessage(".*database system is ready to accept connections.*\\n", 1)))
                 .waitingFor("broker", new WaitAllStrategy()
                                 .withStrategy(Wait.forListeningPort())
                                 .withStrategy(Wait.forLogMessage(".*Started NetworkTrafficServerConnector.*\\n", 1)))
@@ -47,15 +52,6 @@ public class DockerComposeManager {
                 .waitingFor("mockserver", new WaitAllStrategy()
                         .withStrategy(Wait.forListeningPort())
                         .withStrategy(Wait.forLogMessage(".*started on port: 1080.*\\n", 1)));
-
-
-//        DockerComposeContainer<?> container = new DockerComposeContainer<>("path to docker-compose")
-//                .withLogConsumer("broker",  new Slf4jLogConsumer(logger))
-//                .withLogConsumer("schema-registry", new Slf4jLogConsumer(logger))
-//                .withExposedService("broker", 9092)
-//                .withExposedService("schema-registry", 8081)
-//                .waitingFor("broker", Wait.forListeningPort())
-//                .waitingFor("schema-registry", new HttpWaitStrategy().forPort(8081).forStatusCode(200));
 
         container.start();
     }

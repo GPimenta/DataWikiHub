@@ -18,7 +18,11 @@ public class PageSource {
     private final String source;
     @SerializedName("optionalField")
     @Nullable
-    private final String redirectTarget;
+    private String redirectTarget;
+
+    public void setRedirectTarget(String redirectTarget) {
+        this.redirectTarget = redirectTarget;
+    }
 
     public static class Builder {
         private int id;
